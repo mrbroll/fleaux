@@ -1,0 +1,31 @@
+// TODO
+// -CREATE PLATFORM SPECIFIC TASKS FOR INSTALLING LIBUV
+apply plugin: 'c'
+apply plugin: 'cpp'
+
+model {
+    repositories {
+        libs (PrebuiltLibraries) {
+            uv {
+                headers.srcDir '/usr/local/include'
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile = file('/usr/local/lib/libuv.a')
+                }
+            }
+        }
+    }
+}
+binaries.all {
+    lib library: 'uv', linkage: 'static'
+}
+libraries {
+    proteus {}
+}
+
+executables {
+    ptest {
+        binaries.all {
+            lib libraries.proteus.static
+        }
+    }
+}
