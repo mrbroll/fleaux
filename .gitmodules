@@ -1,0 +1,4 @@
+[submodule "uv"]
+	path = uv
+    url = https://github.com/joyent/libuv
+    ignore = dirty

@@ -7,15 +7,18 @@ model {
     repositories {
         libs (PrebuiltLibraries) {
             uv {
-                headers.srcDir '/usr/local/include'
+                headers.srcDir './uv/include'
                 binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file('/usr/local/lib/libuv.a')
+                    staticLibraryFile = file('./uv/.libs/libuv.a')
                 }
             }
         }
     }
 }
 binaries.all {
+    tasks.withType(CCompile) {
+        dependsOn buildUV
+    }
     lib library: 'uv', linkage: 'static'
 }
 libraries {
@@ -27,5 +30,15 @@ executables {
         binaries.all {
             lib libraries.proteus.static
         }
+    }
+}
+
+task buildUV (type: Exec) {
+    workingDir './uv'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        // DO WINDOWS COMPILATION
+    } else {
+        println workingDir
+        commandLine '../build_uv.sh'
     }
 }
