@@ -6,17 +6,14 @@ extern "C"
 {
 #endif
 
-typedef enum fl_pluginLang_e
+typedef void (*fl_modelDestroy_f)(void *);
+typedef fl_modelDestroy_f (*fl_modelInit_f)(void *, void *);
+
+typedef struct fl_model_s
 {
-    FL_LANG_C,
-    FL_LANG_CPP,
-    FL_LANG_JAVA
-} fl_pluginLang_t;
-
-typedef void (*fl_objDestroy_f)(void *);
-typedef fl_objDestroy_f (*fl_objInit_f)(void *, void *);
-
-int fl_objRegister(const char *pluginName, const char *objName, fl_objInit_f objInit);
+    const char *modelType;
+    fl_modelInit_f modelInit;
+} fl_model_t;
 
 #ifdef __cplusplus
 }
