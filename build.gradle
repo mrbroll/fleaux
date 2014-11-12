@@ -17,6 +17,9 @@ model {
                     staticLibraryFile = file('./uv/.libs/libuv.a')
                 }
             }
+            jansson {
+                headers.srcDir './jansson/include'
+            }
         }
     }
 }
@@ -43,10 +46,18 @@ executables {
 task buildUV (type: Exec) {
     workingDir './uv'
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        // DO WINDOWS COMPILATION
+        //DO WINDOWS COMPILATION
     } else {
-        println workingDir
         commandLine '../build_uv.sh'
+    }
+}
+
+task buildJansson (type: Exec) {
+    workingdir './jansson'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        //DO WINDOWS COMPILATION
+    } else {
+       commandLine '../build_jansson.sh' 
     }
 }
 
