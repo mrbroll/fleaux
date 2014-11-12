@@ -3,6 +3,16 @@
 apply plugin: 'c'
 apply plugin: 'cpp'
 
+task setup (type: Exec) {
+    workingDir '.'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        //run batch file
+    }
+    else {
+        commandLine './setup.sh'
+    }
+}
+
 model {
     buildTypes {
         debug
