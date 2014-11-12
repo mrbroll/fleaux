@@ -4,6 +4,11 @@ apply plugin: 'c'
 apply plugin: 'cpp'
 
 model {
+    buildTypes {
+        debug
+        release
+    }
+
     repositories {
         libs (PrebuiltLibraries) {
             uv {
@@ -15,20 +20,22 @@ model {
         }
     }
 }
+
 binaries.all {
     tasks.withType(CCompile) {
         dependsOn buildUV
     }
     lib library: 'uv', linkage: 'static'
 }
+
 libraries {
-    proteus {}
+    fleaux {}
 }
 
 executables {
-    ptest {
+    test {
         binaries.all {
-            lib libraries.proteus.static
+            lib libraries.fleaux.static
         }
     }
 }
@@ -41,4 +48,13 @@ task buildUV (type: Exec) {
         println workingDir
         commandLine '../build_uv.sh'
     }
+}
+
+task runTests (type: Exec) {
+    workingDir '.'
+    commandLine './build/binaries/testExecutable/test'
+}
+
+task wrapper (type: Wrapper) {
+    gradleVersion = '2.2'
 }

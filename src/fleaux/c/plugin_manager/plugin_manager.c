@@ -57,7 +57,7 @@ void on_pluginDirScan(uv_fs_t *req)
 
 
 
-int fl_pro_loadAllPlugins(const char *path)
+int fl_loadAllPlugins(const char *path)
 {
     uv_fs_t pluginReq;
     uv_fs_scandir(uv_default_loop(), &pluginReq, path, O_RDONLY, on_pluginDirScan);

@@ -1,8 +1,8 @@
-#include "../headers/proteus.h"
+#include "../headers/fleaux.h"
 #include <uv.h>
 #include "plugin_manager/plugin_manager.h"
 
-int fl_pro_initProteus(void)
+int fl_initFleaux(void)
 {
     // initalize error logging daemon
 
@@ -25,7 +25,7 @@ int fl_pro_initProteus(void)
     // shut down plugin manager(s)
 
     // stop error logging daemon
-    fl_pro_loadAllPlugins("/Users/mrbroll");
+    fl_loadAllPlugins("/");
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
     return 0;
 }
