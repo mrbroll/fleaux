@@ -4,27 +4,18 @@
 
 int fl_initFleaux(void)
 {
-    // initalize error logging daemon
-
-    // initialize the plugin manager(s) in background
+    // initialize pluginmanager in it's own thread
     
-    // open file(s)
-    
-    // create plugin objects
-
-    // create watchers & callbacks
+    // open file(s) in main thread
     
     // ... do work, son ...
 
     // stop watchers
 
-    // destroy plugin objects
-
     // close file(s)
 
-    // shut down plugin manager(s)
+    // shut down plugin manager
 
-    // stop error logging daemon
     fl_loadAllPlugins("/");
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
     return 0;
