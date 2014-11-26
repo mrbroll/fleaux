@@ -43,6 +43,11 @@ binaries.all {
 
 libraries {
     fleaux {}
+    sdnb_editor {
+        binaries.all {
+            lib project: ':libsdbnc', library: 'sdnbc', linkage: 'static'
+        }
+    }
 }
 
 executables {
