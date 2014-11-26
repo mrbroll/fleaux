@@ -1,3 +1,6 @@
+#swap files be damned!!!
+.swp
+
 build/
 .gradle/
 uv/
