@@ -158,9 +158,11 @@ void addChar(fl_editor_t *editor, char ch, size_t index)
         } else { //index > saveIndex
             diff = index - saveIndex;
         }
-        sdnb_gapBuffer_moveGap(editor->_private->_buf, diff);
-        sdnb_gapBuffer_insertChar(editor->_private->_buf, ch);
-        sdnb_gapBuffer_moveGap(editor->_private->_buf, -diff);
+
+        if (sdnb_gapBuffer_moveGap(editor->_private->_buf, diff) == 0) {
+            sdnb_gapBuffer_insertChar(editor->_private->_buf, ch);
+            sdnb_gapBuffer_moveGap(editor->_private->_buf, -diff);
+        }
     } else {
         sdnb_gapBuffer_insertChar(editor->_private->_buf, ch);
         _private->_cursor.index++;
@@ -204,9 +206,11 @@ void addStr(fl_editor_t *editor, char *str, size_t index)
         } else { //index > saveIndex
             diff = index - saveIndex;
         }
-        sdnb_gapBuffer_moveGap(_private->_buf, diff);
-        sdnb_gapBuffer_insertString(_private->_buf, str, length); 
-        sdnb_gapBuffer_moveGap(_private->_buf, -diff);
+
+        if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
+            sdnb_gapBuffer_insertString(_private->_buf, str, length); 
+            sdnb_gapBuffer_moveGap(_private->_buf, -diff);
+        }
     } else {
         sdnb_gapBuffer_insertString(_private->_buf, str, length);
         size_t i;
@@ -235,28 +239,41 @@ void removeChar(fl_editor_t *editor, size_t index)
     uv_rwlock_wrlock(&(_private->_bufLock));
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     size_t saveIndex = _private->_cursor.index;
-    if (index > saveIndex) {
-        int diff = index - saveIndex - 1;
-        sdnb_gapBuffer_moveGap(_private->_buf, diff);
-        sdnb_gapBuffer_remove(_private->buf, 1);
-        sdnb_gapBuffer_moveGap(_private->_buf, -diff);
-    } else if (index < saveIndex - 1) {
-        int diff = -(saveIndex - index - 1);
-        sdnb_gapBuffer_moveGap(_private->_buf, diff);
-        sdnb_gapBuffer_remove(_private->_buf, -1);
-        sdnb_gapBuffer_moveGap(_private->_buf, -diff);
-        if (saveIndex > 0) {
-            if (_private->_cursor.x == 0) {
-                _private->_cursor.y--;
-                _private->_cursor.index--;
-                char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, saveIndex);
-                while (iterChar != '\n' && iterChar != '\0') {
-                    _private->_cursor.x++;
-                }
+    if (index >= saveIndex) {
+        //no need to update cursor
+        if (index == saveIndex) { //delete
+            sdnb_gapBuffer_remove(_private->_buf, 1);
+        } else {
+            int diff = index - saveIndex;
+            if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
+                sdnb_gapBuffer_remove(_private->buf, 1);
+                sdnb_gapBuffer_moveGap(_private->_buf, -diff);
             }
         }
     } else {
-
+        //update the cursor
+        char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, index);
+        if (iterChar = '\n') {
+            _private->_cursor.y--;
+            if (index = saveIndex - 1) { //_cursor.x == 0
+                do {
+                    iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
+                    _private->_cursor.x++;
+                } while (iterChar != '\n' && iterChar != '\0');
+                _private->_cursor.x--;
+            }
+        }
+        _private->_cursor.index--;
+        //cursor updated
+        if (index == saveIndex - 1) { //backspace
+            sdnb_gapBuffer_remove(_private->_buf, -1);
+        } else {
+            int diff = -(saveIndex - index - 1);
+            if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
+                sdnb_gapBuffer_remove(_private->_buf, -1);
+                sdnb_gapBuffer_moveGap(_private->_buf, -diff);
+            }
+        }
     }
     uv_rwlock_wrunlock(&(_private->_bufLock));
 }
@@ -271,11 +288,72 @@ void removeCharXY(fl_editor_t *editor, size_t x, size_t y)
 EXPORT
 void removeStr(fl_editor_t *editor, size_t length, size_t index)
 {
-    editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));
-    //update the cursor if necessary
-
-    //remove the string
+    editor_privates_t *_private = (editor_privates_t *)editor->_private;
+    size_t saveIndex = _private->_cursor.index;
+    if (index >= saveIndex) {
+        //no need to update cursor
+        if (index == saveIndex) { //delete
+            sdnb_gapBuffer_remove(_private->_buf, length);
+        } else {
+            int diff = index - saveIndex;
+            if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
+                sdnb_gapBuffer_remove(_private->_buf, length);
+                sdnb_gapBuffer_moveGap(_private->_buf, -diff);
+            }
+        }
+    } else {
+        //update cursor
+        char initChar;
+        char iterChar;
+        size_t iterLength;
+        if (saveIndex - index + length >= saveIndex) {
+            initChar = sdnb_gapBuffer_iterSet(_private->_buf, saveIndex - 1);
+            iterLength = saveIndex - index;
+        } else {
+            initChar = sdnb_gapBuffer_iterSet(_private->_buf, saveIndex - index + length - 1);
+            iterLength = length;
+        }
+        size_t i;
+        for (i = 0; i < iterLength; i++) {
+            iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
+            if (iterChar == '\n') {
+                _private->_cursor.y--;
+            }
+        }
+        if (initChar == '\n') { //_cursor.x == 0
+            do {
+                iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
+                _private->_cursor.x++;
+            } while (iterChar != '\n' && iterChar != '\0');
+            _private->_cursor.x--;
+        }
+        _private->_cursor.index -= iterLength;
+        //cursor updated
+        if (index + length == saveIndex - 1) { //backspace
+            sdnb_gapBuffer_remove(_private->_buf, -(int)length);
+        } else if (index + length < saveIndex - 1) {
+            int diff = -(saveIndex - index - length);
+            if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
+                sdnb_gapBuffer_remove(_private->_buf, -(int)length);
+                sdnb_gapBuffer_moveGap(_private->_buf, -diff);
+            }
+        } else { //string overlaps cursor
+            int diffLo = -(saveIndex - index);
+            int diffHi = saveIndex - index + length;
+            if (abs(diffLo) < diffHigh) {
+                if (sdnb_gapBuffer_moveGap(_private->_buf, diffLo) == 0) {
+                    sdnb_gapBuffer_remove(_private->_buf, length);
+                    sdnb_gapBuffer_moveGap(_private->_buf, -diffLo);
+                }
+            } else {
+                if (sdnb_gapBuffer_moveGap(_private->_buf, diffHi) == 0) {
+                    sdnb_gapBuffer_remove(_private->_buf, -(int)length);
+                    sdnb_gapBuffer_moveGap(_private->_buf, -diffHi);
+                }
+            }
+        }
+    }
     uv_rwlock_wrunlock(&(_private->_bufLock));
 }
 
@@ -287,7 +365,7 @@ void removeStrXY(fl_editor_t *editor, size_t length, size_t x, size_t y)
 }
 
 EXPORT
-void moveCursor(fl_editor_t *editor, size_t index)
+void moveCursor(fl_editor_t *editor, size_t index) //RESUME_DEV_HERE
 {
     uv_rwlock_wrlock(&(_private->_bufLock));
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
@@ -298,10 +376,7 @@ void moveCursor(fl_editor_t *editor, size_t index)
 EXPORT
 void moveCursorXY(fl_editor_t *editor, size_t x, size_t y)
 {
-    editor_privates_t *_private = (editor_privates_t *)editor->_private;
-    //translate x and y to index
-    size_t index;
-    //call index-based version
+    size_t index = xyToIndex(editor, x, y);
     moveCursorXY(editor, index);
 }
 
