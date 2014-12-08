@@ -365,8 +365,17 @@ void moveCursor(fl_editor_t *editor, size_t index)
 {
     uv_rwlock_wrlock(&(_private->_bufLock));
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
+    //calc diff
+    int diff;
+    if (index == _private->_cursor.index) {
+        return;
+    } else if (index > _private->_cursor.index) {
+        diff = index - _private->_cursor.index;
+    } else { //index < _private->_cursor.index
+        diff = -(_private->_cursor - index);
+    }
     if (sdnb_gapBuffer_moveGap(_private->_buf, diff)) {
-        if (index < _private->_cursor.index) {
+        if (diff < 0) {
             if (index < _private->_cursor.index - index) { //start from beginning
                 size_t x = 0;
                 size_t y = 0;
@@ -380,14 +389,18 @@ void moveCursor(fl_editor_t *editor, size_t index)
                         x++;
                     }
                     sdnb_gapBuffer_iterNext(_private->_buf);
-                }
-            } else { //start from index RESUME_HERE
+                } 
+            } else { //start from cursor
             }
-        } else if (index > _private->_cursor.index) {
-            if (index - _private->_cursor.index < _private->_bufLength - index) { //start from cursor
-            } else { //start from index
+        } else {
+            if (index - _private->_cursor.index < 
+                _private->_bufLength - _private->_cursor.index) { //start from cusor
+            } else {
             }
         }
+        _private->_cursor.x = x;
+        _private->_cursor.y = y;
+        _private->_cursor.index = index;
     }
     uv_rwunlock_wrlock(&(_private->_bufLock));
 }
