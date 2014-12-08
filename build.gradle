@@ -45,7 +45,7 @@ libraries {
     fleaux {}
     sdnb_editor {
         binaries.all {
-            lib project: ':libsdbnc', library: 'sdnbc', linkage: 'static'
+            lib project: 'libsdnbc', library: 'sdnbc', linkage: 'static'
         }
     }
 }
@@ -65,4 +65,4 @@ task runTests (type: Exec) {
 
 task wrapper (type: Wrapper) {
     gradleVersion = '2.2'
-}
+}           

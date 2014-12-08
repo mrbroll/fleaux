@@ -7,8 +7,7 @@ extern "C"
 #endif
 
 int fl_init(int argc, char **argv);
-void fl_shutDown(void);
-
+void fl_shutdown(void);
 
 #ifdef __cplusplus
 }
