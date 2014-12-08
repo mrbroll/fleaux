@@ -28,6 +28,7 @@ typedef void (*fl_editor_init_f)(fl_editor_t *, const char *path);
 //caller must free memory
 typedef void (*fl_editor_cleanup_f)(fl_editor_t *);
 
+typedef void (*fl_editor_getLength_f)(fl_editor_t *);
 typedef void (*fl_editor_getData_f)(fl_editor_t *, char *data, size_t from, size_t to);
 typedef void (*fl_editor_addChar_f)(fl_editor_t *, const char, size_t index);
 typedef void (*fl_editor_addCharXY_f)(fl_editor_t *, const char, size_t x, size_t y);

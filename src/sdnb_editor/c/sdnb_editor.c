@@ -109,7 +109,13 @@ static size_t xyToIndex(fl_editor_t *editor, size_t x, size_t y)
 }
 
 EXPORT
-void init(fl_editor_t* editor, const char *path)
+size_t sdnb_editor_getLength(fl_editor_t *editor)
+{
+    return ((editor_privates_t *)editor->_private)->_bufLength;
+}
+
+EXPORT
+void sdnb_editor_init(fl_editor_t* editor, const char *path)
 {
     size_t pathLength = strlen(path);
     editor->filePath = (char *)malloc(pathLength);
@@ -121,7 +127,7 @@ void init(fl_editor_t* editor, const char *path)
 }
 
 EXPORT
-void cleanup(fl_editor_t *editor)
+void sdnb_editor_cleanup(fl_editor_t *editor)
 {
     cleanupPrivateMembers(editor->_private);
     free(editor->_private);
@@ -131,7 +137,7 @@ void cleanup(fl_editor_t *editor)
 }
 
 EXPORT
-void getData(fl_editor_t *editor, char *data, size_t from, size_t to)
+void sdnb_editor_getData(fl_editor_t *editor, char *data, size_t from, size_t to)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_rdlock(&(_private->_bufLock));
@@ -140,7 +146,7 @@ void getData(fl_editor_t *editor, char *data, size_t from, size_t to)
 }
 
 EXPORT
-void addChar(fl_editor_t *editor, char ch, size_t index)
+void sdnb_editor_addChar(fl_editor_t *editor, const char ch, size_t index)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));
@@ -173,14 +179,14 @@ void addChar(fl_editor_t *editor, char ch, size_t index)
 }
 
 EXPORT
-void addCharXY(fl_editor_t *editor, char ch, size_t x, size_t y)
+void sdnb_editor_addCharXY(fl_editor_t *editor, const char ch, size_t x, size_t y)
 {
     size_t index = xyToIndex(editor, x, y);
-    addChar(editor, ch, index);
+    sdnb_editor_addChar(editor, ch, index);
 }
 
 EXPORT
-void addStr(fl_editor_t *editor, char *str, size_t index)
+void sdnb_editor_addStr(fl_editor_t *editor, const char *str, size_t index)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));
@@ -223,14 +229,14 @@ void addStr(fl_editor_t *editor, char *str, size_t index)
 }
 
 EXPORT
-void addStrXY(fl_editor_t *editor, char *str, size_t x, size_t y)
+void sdnb_editor_addStrXY(fl_editor_t *editor, const char *str, size_t x, size_t y)
 {
     size_t index = xyToIndex(editor, x, y);
-    addStr(editor, str, index);
+    sdnb_editor_addStr(editor, str, index);
 }
 
 EXPORT
-void removeChar(fl_editor_t *editor, size_t index)
+void sdnb_editor_removeChar(fl_editor_t *editor, size_t index)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));
@@ -275,14 +281,14 @@ void removeChar(fl_editor_t *editor, size_t index)
 }
 
 EXPORT
-void removeCharXY(fl_editor_t *editor, size_t x, size_t y)
+void sdnb_editor_removeCharXY(fl_editor_t *editor, size_t x, size_t y)
 {
     size_t index = xyToIndex(editor, x, y);
-    removeChar(editor, index);
+    sdnb_editor_removeChar(editor, index);
 }
 
 EXPORT
-void removeStr(fl_editor_t *editor, size_t length, size_t index)
+void sdnb_editor_removeStr(fl_editor_t *editor, size_t length, size_t index)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));
@@ -355,15 +361,15 @@ void removeStr(fl_editor_t *editor, size_t length, size_t index)
 }
 
 EXPORT
-void removeStrXY(fl_editor_t *editor, size_t length, size_t x, size_t y)
+void sdnb_editor_removeStrXY(fl_editor_t *editor, size_t length, size_t x, size_t y)
 {
     size_t index = xyToIndex(editor, x, y);
-    removeStr(editor, length, index);
+    sdnb_editor_removeStr(editor, length, index);
     return;
 }
 
 EXPORT
-void moveCursor(fl_editor_t *editor, size_t index)
+void sdnb_editor_moveCursor(fl_editor_t *editor, size_t index)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));
@@ -432,7 +438,7 @@ void moveCursor(fl_editor_t *editor, size_t index)
 }
 
 EXPORT
-void moveCursorXY(fl_editor_t *editor, size_t x, size_t y)
+void sdnb_editor_moveCursorXY(fl_editor_t *editor, size_t x, size_t y)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));

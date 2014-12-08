@@ -9,3 +9,6 @@
 [submodule "libsdnbc"]
 	path = libsdnbc
 	url = https://github.com/mrbroll/libsdnbc.git
+[submodule "gtest"]
+	path = gtest
+	url = https://github.com/mrbroll/gtest-mirror.git

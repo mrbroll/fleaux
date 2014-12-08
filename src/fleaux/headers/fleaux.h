@@ -1,4 +1,4 @@
-#ifndef _FLEAUX_H
+#ifndef _FLEAUX_H_
 #define _FLEAUX_H_
 
 #ifdef __cplusplus

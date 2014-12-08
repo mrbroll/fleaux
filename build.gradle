@@ -33,12 +33,23 @@ model {
                     staticLibraryFile = file('./jansson/build/lib/libjansson.a')
                 }
             }
+            gtest {
+                headers.srcDir './gtest/include'
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile  = file('./gtest/build/libgtest.a')
+                }
+            }
         }
     }
 }
 
 binaries.all {
     lib library: 'uv', linkage: 'static'
+    lib project: 'libsdnbc', library: 'sdnbc', linkage: 'static'
+    if (buildType == buildTypes.debug) {
+        cCompiler.args '-g'
+        cppCompiler.args '-g'
+    }
 }
 
 libraries {
@@ -53,9 +64,24 @@ libraries {
 executables {
     test {
         binaries.all {
+            tasks.withType(CppCompile) {
+                dependsOn buildGtestFleaux
+            }
+            lib library: 'gtest', linkage: 'static'
             lib libraries.fleaux.static
+            lib libraries.sdnb_editor.static
         }
     }
+}
+
+task buildGtestFleaux (type: Exec) {
+    workingDir './gtest'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        // DO WINDOWS COMPILATION
+    } else {
+        commandLine './build.sh'
+    }
+            
 }
 
 task runTests (type: Exec) {
