@@ -225,6 +225,7 @@ void sdnb_editor_addStr(fl_editor_t *editor, const char *str, size_t index)
         }
         _private->_cursor.x = (i - lastNewline);
     }
+    _private->_bufLength += length;
     uv_rwlock_wrunlock(&(_private->_bufLock));
 }
 
@@ -277,6 +278,7 @@ void sdnb_editor_removeChar(fl_editor_t *editor, size_t index)
             }
         }
     }
+    _private->_bufLength--;
     uv_rwlock_wrunlock(&(_private->_bufLock));
 }
 
@@ -356,6 +358,7 @@ void sdnb_editor_removeStr(fl_editor_t *editor, size_t length, size_t index)
             }
         }
     }
+    _private->_bufLength -= length;
     uv_rwlock_wrunlock(&(_private->_bufLock));
     return;
 }

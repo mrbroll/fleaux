@@ -29,8 +29,8 @@ namespace {
         sdnb_editor_addChar(ed0, 'a', 0);
         sdnb_editor_addChar(ed0, 'b', 1);
         sdnb_editor_addChar(ed0, 'c', 2);
-        sdnb_editor_addStr(ed0, "This is a test string ", 0);
-        const char *testStr0 = "This is a test string abc";
+        sdnb_editor_addStr(ed0, " This is a test string", 3);
+        const char *testStr0 = "abc This is a test string";
         char dataStr0[25] = "";
         sdnb_editor_getData(ed0, dataStr0, 0, sdnb_editor_getLength(ed0) - 1);
         ASSERT_STREQ(testStr0, dataStr0);
