@@ -9,6 +9,7 @@ extern "C"
 #endif
 
 typedef struct fl_editor_s fl_editor_t;
+typedef struct fl_editor_cursor_s fl_editor_cursor_t;
 
 typedef enum fl_editor_visibility_e
 {
@@ -28,8 +29,9 @@ typedef void (*fl_editor_init_f)(fl_editor_t *, const char *path);
 //caller must free memory
 typedef void (*fl_editor_cleanup_f)(fl_editor_t *);
 
-typedef void (*fl_editor_getLength_f)(fl_editor_t *);
+typedef size_t (*fl_editor_getLength_f)(fl_editor_t *);
 typedef void (*fl_editor_getData_f)(fl_editor_t *, char *data, size_t from, size_t to);
+typedef fl_editor_cursor_t (*fl_editor_getCursor_f)(fl_editor_t *);
 typedef void (*fl_editor_addChar_f)(fl_editor_t *, const char, size_t index);
 typedef void (*fl_editor_addCharXY_f)(fl_editor_t *, const char, size_t x, size_t y);
 typedef void (*fl_editor_addStr_f)(fl_editor_t *, const char *, size_t index);
@@ -47,6 +49,13 @@ struct fl_editor_s
     fl_editor_visibility_t visibility;
     fl_editor_focus_t focus;
     void *_private; //don't touch!
+};
+
+struct fl_editor_cursor_s
+{
+    size_t index;
+    size_t x;
+    size_t y;
 };
 
 #ifdef __cplusplus

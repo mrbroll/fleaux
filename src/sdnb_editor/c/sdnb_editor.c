@@ -8,17 +8,9 @@
 #define EXPORT __attribute__((visibility("hidden")))
 #define BUF_SIZE 1024
 
-//private
-typedef struct editor_cursor_s
-{
-    size_t index;
-    size_t x;
-    size_t y;
-} editor_cursor_t;
-
 typedef struct editor_privates_s
 {
-    editor_cursor_t _cursor;
+    fl_editor_cursor_t _cursor;
     sdnb_gapBuffer_t *_buf;
     size_t _bufLength;
     uv_rwlock_t _bufLock;
@@ -51,67 +43,86 @@ static void cleanupPrivateMembers(void *priv)
 static size_t xyToIndex(fl_editor_t *editor, size_t x, size_t y)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
-    uv_rwlock_wrlock(&(_private->_bufLock));
-    size_t cX = _private->_cursor.x;
-    size_t cY = _private->_cursor.y;
-    size_t cIndex = _private->_cursor.index;
-    char initChar = sdnb_gapBuffer_iterSet(_private->_buf, cIndex);
-    char iterChar;
-    if (y != cY) { //get to the right line
-        if (y < cY) {
-            while (cY > y) {
-                while (sdnb_gapBuffer_iterPrev(_private->_buf) != '\n') {
-                    cIndex--;
-                }
-                cY--;
-            }
-            //now that we're on the right line,
-            //go to the beginning of the line
-            if (cIndex > 0) {
-                do {
+    uv_rwlock_rdlock(&(_private->_bufLock));
+    size_t iX = _private->_cursor.x;
+    size_t iY = _private->_cursor.y;
+    size_t iIndex = _private->_cursor.index;
+    if (y == iY && x == iX) {
+        uv_rwlock_rdunlock(&(_private->_bufLock));
+        return _private->_cursor.index;
+    }
+    else if (y < iY || (y == iY && x < iX)) { //behind cursor
+        if (iY >> 1 > y) { //start from cursor
+            char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, iIndex);
+            while (iY >= y) {
+                while (iterChar != '\n') {
                     iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
-                    cIndex--;
-                } while (iterChar != '\n' || iterChar != '\0');
-                cIndex++;
+                    if (iterChar == '\0') {
+                        break;
+                    }
+                    iIndex--;
+                }
+                if (iterChar == '\0') {
+                    break;
+                }
+                iY--;
             }
-        } else if (y > cY) {
-            if (initChar == '\n') {
-                cY++;
-            }
-            while (cY < y) {
-                do {
-                    iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-                    cIndex++;
-                } while (iterChar != '\n');
-                cY++;
-            }
-            sdnb_gapBuffer_iterNext(_private->_buf);
-            cIndex++;
-        }
-        cX = 0;
-    }
-
-    if (x != cX) { // get to the right column
-        if (x < cX) {
-            int diffX = cX - x;
-            cIndex -= diffX;
-        } else if (x > cX) {
-            do {
+            if (iterChar == '\n') {
                 iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-                cIndex++;
-                cX++;
-            } while (cX < x || iterChar != '\n' || iterChar != '\0');
-            cIndex--;
+                iIndex++;
+            }
+            iX = 0;
+            while (iX < x) {
+                if (iterChar == '\n' || iterChar == '\0') { //out of bounds
+                    break;
+                }
+                iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
+                iX++;
+                iIndex++;
+            }
+        } else { //start from beginning
+            iX = 0;
+            iY = 0;
+            iIndex = 0;
+            char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, 0);
+            while (iY <= y) {
+                while (iterChar != '\n' && iterChar != '\0' && (iY < y || (iY == y && iX < x))) {
+                    iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
+                    iIndex++;
+                    iX++;
+                }
+
+                if (iterChar == '\n' && iY < y) {
+                    iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
+                    iIndex++;
+                    iY++;
+                    iX = 0;
+                } else {
+                    break;
+                }
+            }
+        }
+    } else { //ahead of cursor
+        char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, iIndex);
+        while (iY <= y) {
+            while (iterChar != '\n' && iterChar != '\0' && (iY < y || (iY == y && iX < x))) {
+                iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
+                iIndex++;
+                iX++;
+            }
+
+            if (iterChar == '\n' && iY < y) {
+                iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
+                iIndex++;
+                iY++;
+                iX = 0;
+            } else {
+                break;
+            }
         }
     }
-    uv_rwlock_wrunlock(&(_private->_bufLock));
-    return cIndex;
-}
-
-EXPORT
-size_t sdnb_editor_getLength(fl_editor_t *editor)
-{
-    return ((editor_privates_t *)editor->_private)->_bufLength;
+    uv_rwlock_rdunlock(&(_private->_bufLock));
+    return iIndex;
 }
 
 EXPORT
@@ -137,12 +148,23 @@ void sdnb_editor_cleanup(fl_editor_t *editor)
 }
 
 EXPORT
+size_t sdnb_editor_getLength(fl_editor_t *editor)
+{
+    return ((editor_privates_t *)editor->_private)->_bufLength;
+}
+
+EXPORT
 void sdnb_editor_getData(fl_editor_t *editor, char *data, size_t from, size_t to)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_rdlock(&(_private->_bufLock));
     sdnb_gapBuffer_getData(_private->_buf, data, from, to);
     uv_rwlock_rdunlock(&(_private->_bufLock));
+}
+
+fl_editor_cursor_t sdnb_editor_getCursor(fl_editor_t *editor)
+{
+    return ((editor_privates_t *)editor->_private)->_cursor;
 }
 
 EXPORT
@@ -171,6 +193,7 @@ void sdnb_editor_addChar(fl_editor_t *editor, const char ch, size_t index)
         } else {
             _private->_cursor.x++;
         }
+        _private->_cursor.index++;
     } else {
         sdnb_gapBuffer_insertChar(_private->_buf, ch);
     }
