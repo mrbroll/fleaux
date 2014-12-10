@@ -288,42 +288,59 @@ void sdnb_editor_removeChar(fl_editor_t *editor, size_t index)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));
-    size_t saveIndex = _private->_cursor.index;
-    if (index >= saveIndex) {
+    size_t cIndex = _private->_cursor.index;
+    size_t cX, cY;
+    if (index > _private->_bufLength) {
+        index = _private->_bufLength;
+    }
+
+    if (index >= cIndex) {
         //no need to update cursor
-        if (index == saveIndex) { //delete
+        if (index == cIndex) { //delete
             sdnb_gapBuffer_remove(_private->_buf, 1);
-        } else {
-            int diff = index - saveIndex;
-            if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
-                sdnb_gapBuffer_remove(_private->_buf, 1);
-                sdnb_gapBuffer_moveGap(_private->_buf, -diff);
-            }
+        } else if (sdnb_gapBuffer_moveGap(_private->_buf, (index - cIndex)) == 0) {
+            sdnb_gapBuffer_remove(_private->_buf, 1);
+            sdnb_gapBuffer_moveGap(_private->_buf, -(index - cIndex));
+        } else { // fail silently
+            uv_rwlock_wrunlock(&(_private->_bufLock));
+            return;
         }
     } else {
         //update the cursor
-        char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, index);
-        if (iterChar == '\n') {
-            _private->_cursor.y--;
-            if (index == saveIndex - 1) { //_cursor.x == 0
-                do {
-                    iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
-                    _private->_cursor.x++;
-                } while (iterChar != '\n' && iterChar != '\0');
-                _private->_cursor.x--;
+        size_t iIndex = cIndex;
+        char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, iIndex);
+        //find beginning of cursor's line
+        while (iterChar != '\n' && iterChar != '\0') {
+            iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
+            iIndex--;
+        }
+        if (iterChar == '\0' || index > iIndex) { //char was on same line
+            cX = _private->_cursor.x - 1;
+        } else if (index == iIndex) { //char was the newline on same line
+            cY = _private->_cursor.y - 1;
+            size_t diffX = 0;
+            iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
+            while (iterChar != '\n' && iterChar != '\0') {
+                diffX++;
+                iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
             }
+            cX = _private->_cursor.x + diffX;
+        } else if (sdnb_gapBuffer_iterSet(_private->_buf, index) == '\n') { //just check if it was a newline
+            cY = _private->_cursor.y - 1;
+        }
+        //cursor updated
+        if (index == cIndex - 1) { //backspace
+            sdnb_gapBuffer_remove(_private->_buf, -1);
+        } else if (sdnb_gapBuffer_moveGap(_private->_buf, -(cIndex - index - 1)) == 0) {
+            sdnb_gapBuffer_remove(_private->_buf, -1);
+            sdnb_gapBuffer_moveGap(_private->_buf, (cIndex - index - 1));
+        } else { //fail silently
+            uv_rwlock_wrunlock(&(_private->_bufLock));
+            return;
         }
         _private->_cursor.index--;
-        //cursor updated
-        if (index == saveIndex - 1) { //backspace
-            sdnb_gapBuffer_remove(_private->_buf, -1);
-        } else {
-            int diff = -(saveIndex - index - 1);
-            if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
-                sdnb_gapBuffer_remove(_private->_buf, -1);
-                sdnb_gapBuffer_moveGap(_private->_buf, -diff);
-            }
-        }
+        _private->_cursor.x = cX;
+        _private->_cursor.y = cY;
     }
     _private->_bufLength--;
     uv_rwlock_wrunlock(&(_private->_bufLock));
