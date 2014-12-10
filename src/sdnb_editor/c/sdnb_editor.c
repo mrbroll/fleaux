@@ -57,6 +57,9 @@ static size_t xyToIndex(fl_editor_t *editor, size_t x, size_t y)
             while (iY >= y) {
                if (iterChar == '\n') {
                    iY--;
+                   if (iY < y) {
+                       break;
+                   }
                }
                iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
                if (iterChar == '\0') {
@@ -255,6 +258,7 @@ void sdnb_editor_addStr(fl_editor_t *editor, const char *str, size_t index)
         for (i = 0; i < length; i++) {
             if (str[i] == '\n') {
                 diffY++;
+                _private->_cursor.x = 0;
                 diffX = 0;
             } else {
                 diffX++;
@@ -305,13 +309,16 @@ void sdnb_editor_removeChar(fl_editor_t *editor, size_t index)
             uv_rwlock_wrunlock(&(_private->_bufLock));
             return;
         }
-    } else {
+    } else { //index < cIndex
         //update the cursor
         size_t iIndex = cIndex;
         char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, iIndex);
         //find beginning of cursor's line
-        while (iterChar != '\n' && iterChar != '\0') {
+        while (iterChar != '\n') {
             iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
+            if (iterChar == '\0') {
+                break;
+            }
             iIndex--;
         }
         if (iterChar == '\0' || index > iIndex) { //char was on same line
