@@ -49,12 +49,11 @@ namespace {
         sdnb_editor_addStr(ed0, "this is a", sdnb_editor_getCursor(ed0).index);
         sdnb_editor_addStr(ed0, " test string", sdnb_editor_getCursor(ed0).index);
         sdnb_editor_addStr(ed0, "\n\n\n", 0);
-        /*sdnb_editor_addStrXY(ed0, "hey", 0, 0);
+        sdnb_editor_addStrXY(ed0, "hey", 0, 0);
         sdnb_editor_addStrXY(ed0, "you", 0, 1);
         sdnb_editor_addStrXY(ed0, "there", 0, 2);
-        sdnb_editor_addStrXY(ed0, " huge", 9, 3);*/
-        //const char *testStr0 = "hey\nyou\nthere\nthis is a huge test string";
-        const char *testStr0 = "\n\n\nthis is a test string";
+        sdnb_editor_addStrXY(ed0, " huge", 9, 3);
+        const char *testStr0 = "hey\nyou\nthere\nthis is a huge test string";
         char dataStr0[64] = "";
         sdnb_editor_getData(ed0, dataStr0, 0, sdnb_editor_getLength(ed0) - 1);
         ASSERT_STREQ(testStr0, dataStr0);
