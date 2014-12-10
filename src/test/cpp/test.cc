@@ -57,6 +57,13 @@ namespace {
         char dataStr0[64] = "";
         sdnb_editor_getData(ed0, dataStr0, 0, sdnb_editor_getLength(ed0) - 1);
         ASSERT_STREQ(testStr0, dataStr0);
+
+        // out of bounds
+        sdnb_editor_addStrXY(ed0, "\nsomething crazy", 1000, 3); //should just append to line
+        const char *testStr1 = "hey\nyou\nthere\nthis is a huge test string\nsomething crazy";
+        char dataStr1[128] = "";
+        sdnb_editor_getData(ed0, dataStr1, 0, sdnb_editor_getLength(ed0) - 1);
+        ASSERT_STREQ(testStr1, dataStr1);
     }
 }
 
