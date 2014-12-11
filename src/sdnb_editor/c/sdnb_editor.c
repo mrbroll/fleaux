@@ -155,11 +155,11 @@ size_t sdnb_editor_getLength(fl_editor_t *editor)
 }
 
 EXPORT
-void sdnb_editor_getData(fl_editor_t *editor, char *data, size_t from, size_t to)
+void sdnb_editor_getData(fl_editor_t *editor, char *data, size_t from, size_t length)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_rdlock(&(_private->_bufLock));
-    sdnb_gapBuffer_getData(_private->_buf, data, from, to);
+    sdnb_gapBuffer_getData(_private->_buf, data, from, length);
     uv_rwlock_rdunlock(&(_private->_bufLock));
 }
 

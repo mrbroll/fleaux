@@ -13,7 +13,7 @@ void sdnb_editor_init(fl_editor_t *editor, const char *path);
 void sdnb_editor_cleanup(fl_editor_t *editor);
 
 size_t sdnb_editor_getLength(fl_editor_t *editor);
-void sdnb_editor_getData(fl_editor_t *editor, char *data, size_t from, size_t to);
+void sdnb_editor_getData(fl_editor_t *editor, char *data, size_t from, size_t length);
 fl_editor_cursor_t sdnb_editor_getCursor(fl_editor_t *editor);
 void sdnb_editor_addChar(fl_editor_t *editor, const char ch, size_t index);
 void sdnb_editor_addCharXY(fl_editor_t *editor, const char ch, size_t x, size_t y);
