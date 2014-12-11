@@ -21,8 +21,8 @@ void sdnb_editor_addStr(fl_editor_t *editor, const char *str, size_t index);
 void sdnb_editor_addStrXY(fl_editor_t *editor, const char *str, size_t x, size_t y);
 void sdnb_editor_removeChar(fl_editor_t *editor, size_t index);
 void sdnb_editor_removeCharXY(fl_editor_t *editor, size_t x, size_t y);
-void sdnb_editor_removeStr(fl_editor_t *editor, size_t length, size_t index);
-void sdnb_editor_removeStrXY(fl_editor_t *editor, size_t length, size_t x, size_t y);
+void sdnb_editor_removeStr(fl_editor_t *editor, size_t index, size_t length);
+void sdnb_editor_removeStrXY(fl_editor_t *editor, size_t x, size_t y, size_t length);
 void sdnb_editor_moveCursor(fl_editor_t *editor, size_t index);
 void sdnb_editor_moveCursorXY(fl_editor_t *editor, size_t x, size_t y);
 

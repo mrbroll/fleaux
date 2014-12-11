@@ -93,6 +93,30 @@ namespace {
         sdnb_editor_getData(ed0, dataStr1, 0, sdnb_editor_getLength(ed0));
         ASSERT_STREQ(testStr1, dataStr1);
     }
+
+    TEST_F(SDNBEditorTest, RemoveStringTest)
+    {
+        sdnb_editor_addStr(ed0, "11223344556677889900", sdnb_editor_getCursor(ed0).index);
+        sdnb_editor_removeStr(ed0, 2, 2);
+        sdnb_editor_removeStr(ed0, 4, 2);
+        sdnb_editor_removeStr(ed0, 6, 2);
+        sdnb_editor_removeStr(ed0, 8, 2);
+        sdnb_editor_removeStr(ed0, 10, 2);
+        const char *testStr0 = "1133557799";
+        char dataStr0[32] = "";
+        sdnb_editor_getData(ed0, dataStr0, 0, sdnb_editor_getLength(ed0));
+        ASSERT_STREQ(testStr0, dataStr0);
+
+        sdnb_editor_addStr(ed0, "\n11\n1122\n112233", sdnb_editor_getCursor(ed0).index);
+
+        sdnb_editor_removeStrXY(ed0, 4, 3, 2);
+        sdnb_editor_removeStrXY(ed0, 0, 1, 1);
+        sdnb_editor_removeStrXY(ed0, 0, 0, 6);
+        const char *testStr1 = "7799\n1\n1122\n1122";
+        char dataStr1[32] = "";
+        sdnb_editor_getData(ed0, dataStr1, 0, sdnb_editor_getLength(ed0));
+        ASSERT_STREQ(testStr1, dataStr1);
+    }
 }
 
 
