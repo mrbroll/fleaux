@@ -47,60 +47,29 @@ static size_t xyToIndex(fl_editor_t *editor, size_t x, size_t y)
     size_t iX = _private->_cursor.x;
     size_t iY = _private->_cursor.y;
     size_t iIndex = _private->_cursor.index;
-    if (y == iY && x == iX) {
+    if (y == iY && x == iX) { //already here
         uv_rwlock_rdunlock(&(_private->_bufLock));
         return _private->_cursor.index;
-    }
-    else if (y < iY || (y == iY && x < iX)) { //behind cursor
-        if (iY >> 1 > y) { //start from cursor
-            char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, iIndex);
-            while (iY >= y) {
-               if (iterChar == '\n') {
-                   iY--;
-                   if (iY < y) {
-                       break;
-                   }
-               }
-               iterChar = sdnb_gapBuffer_iterPrev(_private->_buf);
-               if (iterChar == '\0') {
-                   break;
-               }
-               iIndex--;
+    } else if (y < iY || (y == iY && x < iX)) { //behind cursor
+        //start from beginning
+        iX = 0;
+        iY = 0;
+        iIndex = 0;
+        char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, 0);
+        while (iY <= y) {
+            while (iterChar != '\n' && iterChar != '\0' && (iY < y || (iY == y && iX < x))) {
+                iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
+                iIndex++;
+                iX++;
             }
-            
+
             if (iterChar == '\n' && iY < y) {
                 iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
                 iIndex++;
-            }
-            iX = 0;
-            while (iX < x) {
-                if (iterChar == '\n' || iterChar == '\0') { //out of bounds
-                    break;
-                }
-                iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-                iX++;
-                iIndex++;
-            }
-        } else { //start from beginning
-            iX = 0;
-            iY = 0;
-            iIndex = 0;
-            char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, 0);
-            while (iY <= y) {
-                while (iterChar != '\n' && iterChar != '\0' && (iY < y || (iY == y && iX < x))) {
-                    iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-                    iIndex++;
-                    iX++;
-                }
-
-                if (iterChar == '\n' && iY < y) {
-                    iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-                    iIndex++;
-                    iY++;
-                    iX = 0;
-                } else {
-                    break;
-                }
+                iY++;
+                iX = 0;
+            } else {
+                break;
             }
         }
     } else { //ahead of cursor
@@ -293,7 +262,8 @@ void sdnb_editor_removeChar(fl_editor_t *editor, size_t index)
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     uv_rwlock_wrlock(&(_private->_bufLock));
     size_t cIndex = _private->_cursor.index;
-    size_t cX, cY;
+    size_t cX = _private->_cursor.x;
+    size_t cY = _private->_cursor.y;
     if (index > _private->_bufLength) {
         index = _private->_bufLength;
     }
