@@ -24,103 +24,51 @@ namespace {
             fl_editor_t *ed0;
     };
 
-    TEST_F(SDNBEditorTest, AddCharTest)
+    TEST_F(SDNBEditorTest, InsertTest)
     {
-        sdnb_editor_addChar(ed0, 'a', sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_addChar(ed0, 'b', sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_addChar(ed0, 'c', sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_addChar(ed0, 'x', 0);
-        sdnb_editor_addChar(ed0, 'y', 2);
-        sdnb_editor_addChar(ed0, 'z', 4);
-        sdnb_editor_addChar(ed0, '\n', sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_addChar(ed0, '\n', sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_addCharXY(ed0, 'v', 0, 1);
-        sdnb_editor_addCharXY(ed0, 'u', 0, 1);
-        sdnb_editor_addCharXY(ed0, 'h', sdnb_editor_getCursor(ed0).x, sdnb_editor_getCursor(ed0).y);
-        //sdnb_editor_addStr(ed0, " This is a test string", 3);
-        const char *testStr0 = "xaybzc\nuv\nh";
-        char dataStr0[25] = "";
-        sdnb_editor_getData(ed0, dataStr0, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testStr0, dataStr0);
+        const char *testString0 = "1\n22\n333\n4444\n55555";
+        sdnb_editor_insertAtIndex(ed0, "1\n\n4444", 0);
+        sdnb_editor_insertAtIndex(ed0, "22\n333", 2);
+        sdnb_editor_insertAtIndex(ed0, "\n55555", 999);
+        char dataString0[32] = "";
+        sdnb_editor_getData(ed0, dataString0,  0, sdnb_editor_getLength(ed0));
+        ASSERT_STREQ(testString0, dataString0);
+
+        const char *testString1 = "001\n2112\n33332\n4444993\n555559999";
+        sdnb_editor_insertAtXY(ed0, "00", 0, 0);
+        sdnb_editor_insertAtXY(ed0, "11", 1, 1);
+        sdnb_editor_insertAtXY(ed0, "32", 3, 2);
+        sdnb_editor_insertAtXY(ed0, "993", 99, 3);
+        sdnb_editor_insertAtXY(ed0, "9999", 99, 99);
+        char dataString1[64] = "";
+        sdnb_editor_getData(ed0, dataString1, 0, sdnb_editor_getLength(ed0));
+        ASSERT_STREQ(testString1, dataString1);
     }
 
-    TEST_F(SDNBEditorTest, AddStrTest)
+    TEST_F(SDNBEditorTest, RemoveTest)
     {
-        sdnb_editor_addStr(ed0, "this is a", sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_addStr(ed0, " test string", sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_addStr(ed0, "\n\n\n", 0);
-        sdnb_editor_addStrXY(ed0, "hey", 0, 0);
-        sdnb_editor_addStrXY(ed0, "you", 0, 1);
-        sdnb_editor_addStrXY(ed0, "there", 0, 2);
-        sdnb_editor_addStrXY(ed0, " huge", 9, 3);
-        const char *testStr0 = "hey\nyou\nthere\nthis is a huge test string";
-        char dataStr0[64] = "";
-        sdnb_editor_getData(ed0, dataStr0, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testStr0, dataStr0);
+        const char *testString0 = "\n22\n4444";
+        sdnb_editor_insertAtIndex(ed0, "1\n22\n333\n4444\n55555", 0);
+        sdnb_editor_removeAtIndex(ed0, 0, 1); //"\n22\n333\n4444\n55555"
+        sdnb_editor_removeAtIndex(ed0, 3, 4); //"\n22\n4444\n55555"
+        sdnb_editor_removeAtIndex(ed0, 13, 1); //"\n22\n4444\n5555"
+        sdnb_editor_removeAtIndex(ed0, 8, 99);
+        char dataString0[16] = "";
+        sdnb_editor_getData(ed0, dataString0, 0, sdnb_editor_getLength(ed0));
+        ASSERT_STREQ(testString0, dataString0);
 
-        // out of bounds
-        sdnb_editor_addStrXY(ed0, "\nsomething crazy", 1000, 3); //should just append to line
-        const char *testStr1 = "hey\nyou\nthere\nthis is a huge test string\nsomething crazy";
-        char dataStr1[128] = "";
-        sdnb_editor_getData(ed0, dataStr1, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testStr1, dataStr1);
-
-        //might change this behavior to be more like the XY version
-        sdnb_editor_addStr(ed0, "not going to work", 1000); //should fail silently
-        char dataStr2[128] = "";
-        sdnb_editor_getData(ed0, dataStr2, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testStr1, dataStr2);
-    }
-
-    TEST_F(SDNBEditorTest, RemoveCharTest)
-    {
-        sdnb_editor_addStr(ed0, "11223344556677889900", sdnb_editor_getCursor(ed0).index);
-        for (size_t i = 0; i < 10; i++) {
-            sdnb_editor_removeChar(ed0, i);
-        }
-        const char *testStr0 = "1234567890";
-        char dataStr0[16] = "";
-        sdnb_editor_getData(ed0, dataStr0, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testStr0, dataStr0);
-
-        sdnb_editor_addStr(ed0, "\n11\n1122\n112233\n11223344",  sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_removeCharXY(ed0, 0, 1);
-        sdnb_editor_removeCharXY(ed0, 2, 2);
-        sdnb_editor_removeCharXY(ed0, 4, 3);
-        sdnb_editor_removeCharXY(ed0, 6, 4);
-        const char *testStr1 = "1234567890\n1\n112\n11223\n1122334";
-        char dataStr1[64] = "";
-        sdnb_editor_getData(ed0, dataStr1, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testStr1, dataStr1);
-    }
-
-    TEST_F(SDNBEditorTest, RemoveStringTest)
-    {
-        sdnb_editor_addStr(ed0, "11223344556677889900", sdnb_editor_getCursor(ed0).index);
-        sdnb_editor_removeStr(ed0, 2, 2);
-        sdnb_editor_removeStr(ed0, 4, 2);
-        sdnb_editor_removeStr(ed0, 6, 2);
-        sdnb_editor_removeStr(ed0, 8, 2);
-        sdnb_editor_removeStr(ed0, 10, 2);
-        const char *testStr0 = "1133557799";
-        char dataStr0[32] = "";
-        sdnb_editor_getData(ed0, dataStr0, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testStr0, dataStr0);
-
-        sdnb_editor_addStr(ed0, "\n11\n1122\n112233", sdnb_editor_getCursor(ed0).index);
-
-        sdnb_editor_removeStrXY(ed0, 4, 3, 2);
-        sdnb_editor_removeStrXY(ed0, 0, 1, 1);
-        sdnb_editor_removeStrXY(ed0, 0, 0, 6);
-        const char *testStr1 = "7799\n1\n1122\n1122";
-        char dataStr1[32] = "";
-        sdnb_editor_getData(ed0, dataStr1, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testStr1, dataStr1);
+        sdnb_editor_removeAtIndex(ed0, 0, 99);
+        const char *testString1 = "\n22\n4444";
+        sdnb_editor_insertAtIndex(ed0, "1\n22\n333\n4444\n55555", 0);
+        sdnb_editor_removeAtXY(ed0, 0, 0, 1);
+        sdnb_editor_removeAtXY(ed0, 2, 1, 4);
+        sdnb_editor_removeAtXY(ed0, 4, 3, 1);
+        sdnb_editor_removeAtXY(ed0, 4, 2, 99);
+        char dataString1[16] = "";
+        sdnb_editor_getData(ed0, dataString1, 0, sdnb_editor_getLength(ed0));
+        ASSERT_STREQ(testString1, dataString1);
     }
 }
-
-
-
 
 int main(int argc, char **argv)
 {
