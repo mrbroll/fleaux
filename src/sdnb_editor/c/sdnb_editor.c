@@ -6,7 +6,7 @@
 #include "../../../libsdnbc/src/sdnbc/headers/sdnbc.h"
 
 #define EXPORT __attribute__((visibility("hidden")))
-#define BUF_SIZE 1024
+#define BUF_SIZE 4096
 
 //private
 typedef struct editor_privates_s
