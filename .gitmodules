@@ -1,7 +1,0 @@
-[submodule "uv"]
-	path = uv
-    url = https://github.com/joyent/libuv
-    ignore = dirty
-[submodule "gtest"]
-	path = gtest
-	url = https://github.com/mrbroll/gtest-mirror.git

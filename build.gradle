@@ -3,15 +3,6 @@
 apply plugin: 'c'
 apply plugin: 'cpp'
 
-task setup (type: Exec) {
-    workingDir '.'
-    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        //run batch file
-    }
-    else {
-        commandLine './setup.sh'
-    }
-}
 
 model {
     buildTypes {
@@ -22,30 +13,27 @@ model {
     repositories {
         libs (PrebuiltLibraries) {
             uv {
-                headers.srcDir './uv/include'
+                headers.srcDir './deps/libuv/include'
                 binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file('./uv/.libs/libuv.a')
-                }
-            }
-            jansson {
-                headers.srcDir './jansson/build/include'
-                binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file('./jansson/build/lib/libjansson.a')
+                    staticLibraryFile = file('./deps/libuv/.libs/libuv.a')
                 }
             }
             gtest {
-                headers.srcDir './gtest/include'
+                headers.srcDir './deps/gtest/include'
                 binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile  = file('./gtest/build/libgtest.a')
+                    staticLibraryFile  = file('./deps/gtest/build/libgtest.a')
                 }
             }
         }
     }
 }
 
+def gtestFleauxBuild = new File('./deps/gtest/build')
+def libuvFleauxBuild = new File('./deps/libuv/.libs')
+
 binaries.all {
     lib library: 'uv', linkage: 'static'
-    lib project: 'libsdnbc', library: 'sdnbc', linkage: 'static'
+    lib project: 'deps/libsdnbc', library: 'sdnbc', linkage: 'static'
     if (buildType == buildTypes.debug) {
         cCompiler.args '-g'
         cppCompiler.args '-g'
@@ -56,38 +44,77 @@ libraries {
     fleaux {}
     sdnb_editor {
         binaries.all {
-            lib project: 'libsdnbc', library: 'sdnbc', linkage: 'static'
+            lib project: 'deps/libsdnbc', library: 'sdnbc', linkage: 'static'
+            lib library: 'uv', linkage: 'static'
+            if (!libuvFleauxBuild.exists()) {
+                tasks.withType(LinkSharedLibrary) {
+                    dependsOn(buildUVFleaux)
+                }
+            }
         }
     }
 }
 
 executables {
-    test {
+    fleaux_test {
         binaries.all {
-            tasks.withType(CppCompile) {
-                dependsOn buildGtestFleaux
-            }
             lib library: 'gtest', linkage: 'static'
             lib libraries.fleaux.static
             lib libraries.sdnb_editor.static
+            if (!gtestFleauxBuild.exists()) {
+                tasks.withType(LinkExecutable) {
+                    dependsOn buildGtestFleaux
+                }
+            }
+
+            if (!libuvFleauxBuild.exists()) {
+                tasks.withType(LinkExecutable) {
+                    dependsOn buildUVFleaux
+                }
+            }
+
+            tasks.withType(LinkExecutable) {
+                doLast {
+                    if (outputFile.exists()) {
+                            def fleauxTestProc = outputFile.getAbsolutePath().execute()
+                            println "Running Tests...\n${fleauxTestProc.text}"
+                    }
+                }
+            }
         }
     }
 }
 
+
+task buildUVFleaux (type: Exec) {
+    workingDir '.'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        //run batch file
+    }
+    else {
+        commandLine './build_uv.sh'
+    }
+}
+
 task buildGtestFleaux (type: Exec) {
-    workingDir './gtest'
+    workingDir './deps/gtest'
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
         // DO WINDOWS COMPILATION
     } else {
         commandLine './build.sh'
     }
-            
 }
 
-task runTests (type: Exec) {
+task cleanProjDir (type: Exec) {
     workingDir '.'
-    commandLine './build/binaries/testExecutable/test'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        // run windows command
+    } else {
+        commandLine 'find . -name "*.swp" | xargs rm -f'
+    }
 }
+
+cleanProjDir
 
 task wrapper (type: Wrapper) {
     gradleVersion = '2.2'

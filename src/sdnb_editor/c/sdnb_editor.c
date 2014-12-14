@@ -3,7 +3,7 @@
 #include <uv.h>
 #include "../headers/sdnb_editor.h"
 #include "../../fleaux/headers/plugin_models/editor.h"
-#include "../../../libsdnbc/src/sdnbc/headers/sdnbc.h"
+#include "../../../deps/libsdnbc/src/sdnbc/headers/sdnbc.h"
 
 #define EXPORT __attribute__((visibility("hidden")))
 #define BUF_SIZE 4096
