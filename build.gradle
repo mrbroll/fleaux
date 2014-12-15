@@ -106,7 +106,7 @@ task cleanProjDir (type: Exec) {
 
 cleanProjDir
 
-task runFleauxTests << {
+task fleauxTests << {
     def testName = 'fleaux_test'
     def testDir = project.buildDir.getAbsolutePath() + '/binaries/fleaux_testExecutable/'
     def releaseTest = new File(testDir + 'release/' + testName)
