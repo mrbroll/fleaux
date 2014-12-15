@@ -1,7 +1,8 @@
-#include "../../fleaux/c/plugin_manager/plugin_manager.h"
 #include "../../fleaux/headers/fleaux.h"
-#include "../../sdnb_editor/headers/sdnb_editor.h"
+#include "../../sdnb_editor/headers/editor.h"
 #include "gtest/gtest.h"
+#include <uv.h>
+#include <iostream>
 
 using namespace std;
 
@@ -11,14 +12,16 @@ namespace {
         protected:
             SDNBEditorTest()
             {
-                ed0 = (fl_editor_t *)malloc(sizeof(fl_editor_t));
-                sdnb_editor_init(ed0, "/no/path");
+                char cwd[1024];
+                size_t cwdLength = sizeof(cwd);
+                uv_cwd(cwd, &cwdLength);
+                strcat(cwd, "/test.txt");
+                ed0 = sdnb_editor_create(cwd);
             }
 
             ~SDNBEditorTest()
             {
-                sdnb_editor_cleanup(ed0);
-                free(ed0);
+                sdnb_editor_destroy(ed0);
             }
 
             fl_editor_t *ed0;

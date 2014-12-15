@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <uv.h>
-#include "../headers/sdnb_editor.h"
+#include "../headers/editor.h"
+#include "../headers/fs_module.h"
 #include "../../fleaux/headers/plugin_models/editor.h"
 #include "../../../deps/libsdnbc/src/sdnbc/headers/sdnbc.h"
 
@@ -15,27 +16,26 @@ typedef struct editor_privates_s
     sdnb_gapBuffer_t *_buf;
     size_t _bufLength;
     uv_rwlock_t _bufLock;
-    uv_rwlock_t _cursLock;
 } editor_privates_t;
 
-static void initPrivateMembers(void *priv)
+static void *createPrivateMembers(void)
 {
-    editor_privates_t *_private = (editor_privates_t*)priv;
+    editor_privates_t *_private = (editor_privates_t*)malloc(sizeof(editor_privates_t));
     _private->_cursor.index = 0;
     _private->_cursor.x = 0;
     _private->_cursor.y = 0;
     _private->_buf = sdnb_gapBuffer_create(BUF_SIZE);
     _private->_bufLength = 0;
     uv_rwlock_init(&(_private->_bufLock));
-    uv_rwlock_init(&(_private->_cursLock));
+    return (void *)_private;
 }
 
-static void cleanupPrivateMembers(void *priv)
+static void destroyPrivateMembers(void *priv)
 {
     editor_privates_t *_private = (editor_privates_t*)priv;
-    uv_rwlock_destroy(&(_private->_cursLock));
     uv_rwlock_destroy(&(_private->_bufLock));
     sdnb_gapBuffer_destroy(_private->_buf);
+    free(priv);
 }
 
 static fl_editor_cursor_t xyToCursor(fl_editor_t *editor, fl_editor_cursor_t from, size_t x, size_t y)
@@ -106,28 +106,37 @@ static fl_editor_cursor_t indexToCursor(fl_editor_t *editor, fl_editor_cursor_t 
         }
     }
     return cursor;
-} 
-
-EXPORT
-void sdnb_editor_init(fl_editor_t* editor, const char *path)
-{
-    size_t pathLength = strlen(path);
-    editor->filePath = (char *)malloc(pathLength);
-    strcpy(editor->filePath, path);
-    editor->visibility = FL_EDITOR_VISIBLE;
-    editor->focus = FL_EDITOR_FOCUS;
-    editor->_private = malloc(sizeof(editor_privates_t));
-    initPrivateMembers(editor->_private);
 }
 
 EXPORT
-void sdnb_editor_cleanup(fl_editor_t *editor)
+fl_editor_t *sdnb_editor_create(const char *path)
 {
-    cleanupPrivateMembers(editor->_private);
-    free(editor->_private);
+    fl_editor_t *editor = (fl_editor_t *)malloc(sizeof(fl_editor_t));
+    if (editor != NULL) {
+        editor->_private = createPrivateMembers();
+        if (editor->_private != NULL) {
+            size_t pathLength = strlen(path);
+            editor->filePath = (char *)malloc(pathLength + 1);
+            strcpy(editor->filePath, path);
+            editor->visibility = FL_EDITOR_VISIBLE;
+            editor->focus = FL_EDITOR_FOCUS;
+            //open and read file
+            sdnb_editor_readFile(editor, path);
+        }
+    }
+    return editor;
+}
+
+EXPORT
+void sdnb_editor_destroy(fl_editor_t *editor)
+{
+    //open and write file
+    sdnb_editor_writeFile(editor, editor->filePath);
+    destroyPrivateMembers(editor->_private);
     editor->focus = FL_EDITOR_BLUR;
     editor->visibility = FL_EDITOR_HIDDEN;
     free(editor->filePath);
+    free(editor);
 }
 
 EXPORT
@@ -168,7 +177,7 @@ void sdnb_editor_insertAtCursor(fl_editor_t *editor, const char *str, fl_editor_
         sdnb_gapBuffer_moveGap(_private->_buf, -diff);
         _private->_bufLength += strLength;
         if (diff <= 0) {
-            _private->_cursor = indexToCursor(editor, _private->_cursor, _private->_cursor.index + strLength); 
+            _private->_cursor = indexToCursor(editor, _private->_cursor, _private->_cursor.index + strLength);
         }
     }
 }

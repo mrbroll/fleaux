@@ -1,6 +1,5 @@
 #include "../headers/fleaux.h"
 #include <uv.h>
-#include "plugin_manager/plugin_manager.h"
 
 int fl_init(int argc, char **argv)
 {

@@ -8,9 +8,9 @@ extern "C"
 {
 #endif
 
-void sdnb_editor_init(fl_editor_t *editor, const char *path);
+fl_editor_t *sdnb_editor_create(const char *path);
 
-void sdnb_editor_cleanup(fl_editor_t *editor);
+void sdnb_editor_destroy(fl_editor_t *editor);
 
 size_t sdnb_editor_getLength(fl_editor_t *editor);
 void sdnb_editor_getData(fl_editor_t *editor, char *data, size_t from, size_t length);
