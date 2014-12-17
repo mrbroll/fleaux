@@ -122,6 +122,7 @@ fl_editor_t *sdnb_editor_create(const char *path)
             editor->focus = FL_EDITOR_FOCUS;
             //open and read file
             sdnb_editor_readFile(editor, path);
+            //while (uv_is_active((uv_handle_t *)(&sdnb_editor_fsReadCheck))) {}
         }
     }
     return editor;
@@ -130,8 +131,6 @@ fl_editor_t *sdnb_editor_create(const char *path)
 EXPORT
 void sdnb_editor_destroy(fl_editor_t *editor)
 {
-    //open and write file
-    sdnb_editor_writeFile(editor, editor->filePath);
     destroyPrivateMembers(editor->_private);
     editor->focus = FL_EDITOR_BLUR;
     editor->visibility = FL_EDITOR_HIDDEN;

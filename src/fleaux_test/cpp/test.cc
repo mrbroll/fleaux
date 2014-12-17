@@ -47,7 +47,7 @@ namespace {
         sdnb_editor_getData(ed0, dataString1, 0, sdnb_editor_getLength(ed0));
         ASSERT_STREQ(testString1, dataString1);
     }
-
+/*
     TEST_F(SDNBEditorTest, RemoveTest)
     {
         const char *testString0 = "\n22\n4444";
@@ -70,7 +70,7 @@ namespace {
         char dataString1[16] = "";
         sdnb_editor_getData(ed0, dataString1, 0, sdnb_editor_getLength(ed0));
         ASSERT_STREQ(testString1, dataString1);
-    }
+    }*/
 }
 
 int main(int argc, char **argv)
