@@ -50,7 +50,7 @@ static fl_editor_cursor_t xyToCursor(fl_editor_t *editor, fl_editor_cursor_t fro
         cursor = from;
     }
     char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, cursor.index);
-    while (cursor.y <= y) {
+    while (cursor.y <= y && cursor.index < _private->_bufLength) {
         while (iterChar != '\n' && iterChar != '\0' && (cursor.y < y || (cursor.y == y && cursor.x < x))) {
             iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
             cursor.index++;
@@ -77,7 +77,7 @@ static fl_editor_cursor_t indexToCursor(fl_editor_t *editor, fl_editor_cursor_t 
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     fl_editor_cursor_t cursor;
-    if (index >= _private->_bufLength) {
+    if (index > _private->_bufLength) {
         index = _private->_bufLength;
     }
 
@@ -104,6 +104,27 @@ static fl_editor_cursor_t indexToCursor(fl_editor_t *editor, fl_editor_cursor_t 
         } else {
             break;
         }
+    }
+    return cursor;
+}
+
+static fl_editor_cursor_t getStrDiff(const char *str)
+{
+    fl_editor_cursor_t cursor = (fl_editor_cursor_t) {  .index = 0, \
+                                                        .x = 0, \
+                                                        .y = 0 };
+    int lastCharWasNewline = 0;
+    while (str[cursor.index] != '\0') {
+        if (str[cursor.index] == '\n') {
+            cursor.y++;
+            cursor.x++;
+            lastCharWasNewline = 1;
+        } else if (lastCharWasNewline) {
+            cursor.x = 0;
+        } else {
+            cursor.x++;
+        }
+        cursor.index++;
     }
     return cursor;
 }
@@ -176,7 +197,12 @@ void sdnb_editor_insertAtCursor(fl_editor_t *editor, const char *str, fl_editor_
         sdnb_gapBuffer_moveGap(_private->_buf, -diff);
         _private->_bufLength += strLength;
         if (diff <= 0) {
-            _private->_cursor = indexToCursor(editor, _private->_cursor, _private->_cursor.index + strLength);
+            fl_editor_cursor_t cursorDiff = getStrDiff(str);
+            _private->_cursor.index += cursorDiff.index;
+            _private->_cursor.y += cursorDiff.y;
+            if (cursor.y == _private->_cursor.y) {
+                _private->_cursor.x += cursorDiff.x;
+            }
         }
     }
 }

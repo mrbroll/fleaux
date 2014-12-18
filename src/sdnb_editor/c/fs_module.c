@@ -7,7 +7,7 @@
 #include "../../fleaux/headers/plugin_models/editor.h"
 
 #define EXPORT __attribute__((visibility("hidden")))
-#define SDNB_EDITOR_FS_BUF_SIZE (32)
+#define SDNB_EDITOR_FS_BUF_SIZE (1024)
 
 /* Request Handles */
 static uv_fs_t sdnb_editor_fsReadOpenReq;

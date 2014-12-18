@@ -3,8 +3,13 @@
 #include "gtest/gtest.h"
 #include <uv.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <cstring>
 
 using namespace std;
+
+
 
 namespace {
     class SDNBEditorTest : public ::testing::Test
@@ -12,40 +17,40 @@ namespace {
         protected:
             SDNBEditorTest()
             {
-                char cwd[1024];
-                size_t cwdLength = sizeof(cwd);
-                uv_cwd(cwd, &cwdLength);
-                strcat(cwd, "/test.txt");
-                ed0 = sdnb_editor_create(cwd);
+                ed0 = sdnb_editor_create("test/editor/input.txt");
+                ed1 = sdnb_editor_create("test/editor/input.txt");
             }
 
             ~SDNBEditorTest()
             {
                 sdnb_editor_destroy(ed0);
+                sdnb_editor_destroy(ed1);
             }
 
             fl_editor_t *ed0;
+            fl_editor_t *ed1;
     };
 
     TEST_F(SDNBEditorTest, InsertTest)
     {
-        const char *testString0 = "1\n22\n333\n4444\n55555";
-        sdnb_editor_insertAtIndex(ed0, "1\n\n4444", 0);
-        sdnb_editor_insertAtIndex(ed0, "22\n333", 2);
-        sdnb_editor_insertAtIndex(ed0, "\n55555", 999);
-        char dataString0[32] = "";
+        ifstream file("test/editor/insert_test.txt");
+        stringstream str_buf;
+        str_buf << file.rdbuf();
+        sdnb_editor_insertAtIndex(ed0, "adding something before the first line\n", 0);
+        sdnb_editor_insertAtIndex(ed0, " adding something after the second line", 85);
+        sdnb_editor_insertAtIndex(ed0, "the middle of ",  133);
+        sdnb_editor_insertAtIndex(ed0, "and this is the end of the buffer\n", 999);
+        char dataString0[sdnb_editor_getLength(ed0)];
         sdnb_editor_getData(ed0, dataString0,  0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testString0, dataString0);
+        ASSERT_STREQ(str_buf.str().c_str(), dataString0);
 
-        const char *testString1 = "001\n2112\n33332\n4444993\n555559999";
-        sdnb_editor_insertAtXY(ed0, "00", 0, 0);
-        sdnb_editor_insertAtXY(ed0, "11", 1, 1);
-        sdnb_editor_insertAtXY(ed0, "32", 3, 2);
-        sdnb_editor_insertAtXY(ed0, "993", 99, 3);
-        sdnb_editor_insertAtXY(ed0, "9999", 99, 99);
-        char dataString1[64] = "";
-        sdnb_editor_getData(ed0, dataString1, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testString1, dataString1);
+        sdnb_editor_insertAtXY(ed1, "adding something before the first line\n", 0, 0);
+        sdnb_editor_insertAtXY(ed1, " adding something after the second line", 23, 2);
+        sdnb_editor_insertAtXY(ed1, "the middle of ", 8, 3);
+        sdnb_editor_insertAtXY(ed1, "and this is the end of the buffer\n", 99, 99);
+        char dataString1[sdnb_editor_getLength(ed1)];
+        sdnb_editor_getData(ed1, dataString1, 0, sdnb_editor_getLength(ed1));
+        ASSERT_STREQ(str_buf.str().c_str(), dataString1);
     }
 /*
     TEST_F(SDNBEditorTest, RemoveTest)
