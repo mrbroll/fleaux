@@ -52,30 +52,30 @@ namespace {
         sdnb_editor_getData(ed1, dataString1, 0, sdnb_editor_getLength(ed1));
         ASSERT_STREQ(str_buf.str().c_str(), dataString1);
     }
-/*
+
     TEST_F(SDNBEditorTest, RemoveTest)
     {
-        const char *testString0 = "\n22\n4444";
-        sdnb_editor_insertAtIndex(ed0, "1\n22\n333\n4444\n55555", 0);
-        sdnb_editor_removeAtIndex(ed0, 0, 1); //"\n22\n333\n4444\n55555"
-        sdnb_editor_removeAtIndex(ed0, 3, 4); //"\n22\n4444\n55555"
-        sdnb_editor_removeAtIndex(ed0, 13, 1); //"\n22\n4444\n5555"
-        sdnb_editor_removeAtIndex(ed0, 8, 99);
-        char dataString0[16] = "";
+        ifstream file("test/editor/remove_test.txt");
+        stringstream str_buf;
+        str_buf << file.rdbuf();
+        sdnb_editor_removeAtIndex(ed0, 0, 5);
+        sdnb_editor_removeAtIndex(ed0, 30, 7);
+        sdnb_editor_removeAtIndex(ed0, 52, 5);
+        sdnb_editor_removeAtIndex(ed0, 54, 24);
+        sdnb_editor_removeAtIndex(ed0, 67, 8);
+        char dataString0[sdnb_editor_getLength(ed0)];
         sdnb_editor_getData(ed0, dataString0, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testString0, dataString0);
+        ASSERT_STREQ(str_buf.str().c_str(), dataString0);
 
-        sdnb_editor_removeAtIndex(ed0, 0, 99);
-        const char *testString1 = "\n22\n4444";
-        sdnb_editor_insertAtIndex(ed0, "1\n22\n333\n4444\n55555", 0);
-        sdnb_editor_removeAtXY(ed0, 0, 0, 1);
-        sdnb_editor_removeAtXY(ed0, 2, 1, 4);
-        sdnb_editor_removeAtXY(ed0, 4, 3, 1);
-        sdnb_editor_removeAtXY(ed0, 4, 2, 99);
-        char dataString1[16] = "";
-        sdnb_editor_getData(ed0, dataString1, 0, sdnb_editor_getLength(ed0));
-        ASSERT_STREQ(testString1, dataString1);
-    }*/
+        sdnb_editor_removeAtXY(ed1, 0, 0, 5);
+        sdnb_editor_removeAtXY(ed1, 12, 1, 7);
+        sdnb_editor_removeAtXY(ed1, 17, 2, 5);
+        sdnb_editor_removeAtXY(ed1, 0, 3, 24);
+        sdnb_editor_removeAtXY(ed1, 14, 3, 8);
+        char dataString1[sdnb_editor_getLength(ed1)];
+        sdnb_editor_getData(ed1, dataString1, 0, sdnb_editor_getLength(ed1));
+        ASSERT_STREQ(str_buf.str().c_str(), dataString1);
+    }
 }
 
 int main(int argc, char **argv)

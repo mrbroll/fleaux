@@ -38,6 +38,10 @@ static void destroyPrivateMembers(void *priv)
     free(priv);
 }
 
+//we're always going to count forward, because it makes for stupid simple code
+//
+//if there are performance issues with this, we'll probably introduce an
+//indexing mechanism for newlines
 static fl_editor_cursor_t xyToCursor(fl_editor_t *editor, fl_editor_cursor_t from, size_t x, size_t y)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
@@ -69,10 +73,6 @@ static fl_editor_cursor_t xyToCursor(fl_editor_t *editor, fl_editor_cursor_t fro
     return cursor;
 }
 
-//we're always going to count forward, because it makes for stupid simple code
-//
-//if there are performance issues with this, we'll probably introduce an
-//indexing mechanism for newlines
 static fl_editor_cursor_t indexToCursor(fl_editor_t *editor, fl_editor_cursor_t from, size_t index)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
