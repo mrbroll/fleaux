@@ -94,7 +94,7 @@ static void sdnb_editor_fsReadData(fl_editor_t *editor)
 {
     memset(sdnb_editor_fsReadStrBuf, '\0', SDNB_EDITOR_FS_BUF_SIZE + 1);
     memcpy(sdnb_editor_fsReadStrBuf, sdnb_editor_fsReadBuf, SDNB_EDITOR_FS_BUF_SIZE);
-    sdnb_editor_insertAtCursor(editor, sdnb_editor_fsReadStrBuf, sdnb_editor_getCursor(editor));
+    sdnb_editor_insertAtIndex(editor, sdnb_editor_fsReadStrBuf, sdnb_editor_getCursor(editor).index);
     memset(sdnb_editor_fsReadBuf, '\0', SDNB_EDITOR_FS_BUF_SIZE);
     uv_fs_read( uv_default_loop(), \
                 &sdnb_editor_fsReadReq, \

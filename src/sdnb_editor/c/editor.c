@@ -181,8 +181,7 @@ fl_editor_cursor_t sdnb_editor_getCursor(fl_editor_t *editor)
     return ((editor_privates_t *)editor->_private)->_cursor;
 }
 
-EXPORT
-void sdnb_editor_insertAtCursor(fl_editor_t *editor, const char *str, fl_editor_cursor_t cursor)
+static void sdnb_editor_insertAtCursor(fl_editor_t *editor, const char *str, fl_editor_cursor_t cursor)
 {
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     size_t strLength = strlen(str);
@@ -226,8 +225,7 @@ void sdnb_editor_insertAtXY(fl_editor_t *editor, const char *str, size_t x, size
     uv_rwlock_wrunlock(&(((editor_privates_t *)editor->_private)->_bufLock));
 }
 
-EXPORT
-void sdnb_editor_removeAtCursor(fl_editor_t *editor, fl_editor_cursor_t from, size_t length)
+static void sdnb_editor_removeAtCursor(fl_editor_t *editor, fl_editor_cursor_t from, size_t length)
 {
     if (length > 0) {
         editor_privates_t *_private = (editor_privates_t *)editor->_private;
