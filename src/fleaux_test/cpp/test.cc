@@ -1,5 +1,6 @@
 #include "../../fleaux/headers/fleaux.h"
 #include "../../sdnb_editor/headers/editor.h"
+#include "../../sdnb_editor/headers/fs_module.h"
 #include "gtest/gtest.h"
 #include <uv.h>
 #include <iostream>
@@ -75,6 +76,31 @@ namespace {
         char dataString1[sdnb_editor_getLength(ed1)];
         sdnb_editor_getData(ed1, dataString1, 0, sdnb_editor_getLength(ed1));
         ASSERT_STREQ(str_buf.str().c_str(), dataString1);
+    }
+
+    TEST_F(SDNBEditorTest, MoveTest)
+    {
+        ifstream file("test/editor/move_test.txt");
+        stringstream str_buf;
+        str_buf << file.rdbuf();
+        sdnb_editor_moveCursorToIndex(ed0, 0);
+        sdnb_editor_insertAtCursor(ed0, "adding something before the first line\n", sdnb_editor_getCursor(ed0));
+        sdnb_editor_moveCursorToXY(ed0, 0, 1);
+        sdnb_editor_removeAtCursor(ed0, sdnb_editor_getCursor(ed0), 5);
+        sdnb_editor_moveCursorToXY(ed0, 16, 2);
+        sdnb_editor_removeAtIndex(ed0, sdnb_editor_getCursor(ed0).index - 4, 7);
+        sdnb_editor_moveCursorToXY(ed0, 99, 3);
+        sdnb_editor_removeAtXY(ed0, 11, 3, 11);
+        sdnb_editor_moveCursorToXY(ed0, 999, 4);
+        sdnb_editor_removeAtXY(ed0, 0, 4, 24);
+        sdnb_editor_insertAtCursor(ed0, "replacing line four\n", sdnb_editor_getCursor(ed0));
+        sdnb_editor_moveCursorToIndex(ed0, 999);
+        sdnb_editor_insertAtCursor(ed0, "and this is the end of the buffer\n", sdnb_editor_getCursor(ed0));
+        char testString0[sdnb_editor_getLength(ed0)];
+        sdnb_editor_getData(ed0, testString0, 0, sdnb_editor_getLength(ed0));
+        ASSERT_STREQ(str_buf.str().c_str(), testString0);
+
+        sdnb_editor_writeFile(ed0, "test/editor/output.txt");
     }
 }
 

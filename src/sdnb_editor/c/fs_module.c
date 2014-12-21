@@ -7,7 +7,7 @@
 #include "../../fleaux/headers/plugin_models/editor.h"
 
 #define EXPORT __attribute__((visibility("hidden")))
-#define SDNB_EDITOR_FS_BUF_SIZE (1024)
+#define SDNB_EDITOR_FS_BUF_SIZE (16)
 
 /* Request Handles */
 static uv_fs_t sdnb_editor_fsReadOpenReq;
@@ -25,6 +25,7 @@ static char sdnb_editor_fsWriteBuf[SDNB_EDITOR_FS_BUF_SIZE];
 static char sdnb_editor_fsWriteStrBuf[SDNB_EDITOR_FS_BUF_SIZE + 1];
 static uv_buf_t sdnb_editor_uvReadBuf;
 static uv_buf_t sdnb_editor_uvWriteBuf;
+static size_t sdnb_editor_fsWriteIndex;
 
 /* Callbacks and Helpers */
 static void sdnb_editor_fsOnReadCheck(uv_check_t *handle)
@@ -41,15 +42,12 @@ static void sdnb_editor_fsOnWrite(uv_fs_t *req);
 
 static void sdnb_editor_fsWriteData(fl_editor_t *editor)
 {
-    if (sdnb_editor_getLength(editor) == 0) {
-        uv_check_stop(&sdnb_editor_fsWriteCheck);
-        uv_fs_close(uv_default_loop(), &sdnb_editor_fsWriteCloseReq, sdnb_editor_fsWriteOpenReq.result, NULL);
-    } else {
-        memset(sdnb_editor_fsWriteStrBuf, 0, sizeof(sdnb_editor_fsWriteStrBuf));
-        memset(sdnb_editor_fsWriteBuf, 0, sizeof(sdnb_editor_fsWriteBuf));
-        sdnb_editor_getData(editor, sdnb_editor_fsWriteStrBuf, 0, SDNB_EDITOR_FS_BUF_SIZE);
-        sdnb_editor_removeAtIndex(editor, 0, SDNB_EDITOR_FS_BUF_SIZE);
-        memcpy(sdnb_editor_fsWriteBuf, sdnb_editor_fsWriteStrBuf, sizeof(sdnb_editor_fsWriteBuf));
+    memset(sdnb_editor_fsWriteStrBuf, '\0', SDNB_EDITOR_FS_BUF_SIZE + 1);
+    memset(sdnb_editor_fsWriteBuf, '\0', SDNB_EDITOR_FS_BUF_SIZE);
+    sdnb_editor_getData(editor, sdnb_editor_fsWriteStrBuf, sdnb_editor_fsWriteIndex, SDNB_EDITOR_FS_BUF_SIZE);
+    if (strlen(sdnb_editor_fsWriteStrBuf) > 0) {
+        sdnb_editor_fsWriteIndex += SDNB_EDITOR_FS_BUF_SIZE;
+        memcpy(sdnb_editor_fsWriteBuf, sdnb_editor_fsWriteStrBuf, SDNB_EDITOR_FS_BUF_SIZE);
         uv_fs_write(uv_default_loop(), \
                     &sdnb_editor_fsWriteReq, \
                     sdnb_editor_fsWriteOpenReq.result, \
@@ -57,6 +55,14 @@ static void sdnb_editor_fsWriteData(fl_editor_t *editor)
                     1,
                     -1,
                     sdnb_editor_fsOnWrite);
+    } else {
+        uv_check_stop(&sdnb_editor_fsWriteCheck);
+        uv_fs_ftruncate(uv_default_loop(), \
+                        &sdnb_editor_fsWriteCloseReq, \
+                        sdnb_editor_fsWriteOpenReq.result, \
+                        sdnb_editor_getLength(editor), \
+                        NULL);
+        uv_fs_close(uv_default_loop(), &sdnb_editor_fsWriteCloseReq, sdnb_editor_fsWriteOpenReq.result, NULL);
     }
 }
 
@@ -75,7 +81,8 @@ static void sdnb_editor_fsWriteOnOpen(uv_fs_t *req)
     if (req->result < 0) {
         fprintf(stderr, "error opening file: %zd\n", req->result);
     } else {
-        sdnb_editor_uvWriteBuf = uv_buf_init(sdnb_editor_fsWriteBuf, sizeof(sdnb_editor_fsWriteBuf));
+        sdnb_editor_uvWriteBuf = uv_buf_init(sdnb_editor_fsWriteBuf, SDNB_EDITOR_FS_BUF_SIZE);
+        sdnb_editor_fsWriteIndex = 0;
         sdnb_editor_fsWriteData((fl_editor_t *)req->data);
     }
     uv_fs_req_cleanup(req);
@@ -85,10 +92,10 @@ static void sdnb_editor_fsOnRead(uv_fs_t *req);
 
 static void sdnb_editor_fsReadData(fl_editor_t *editor)
 {
-    memset(sdnb_editor_fsReadStrBuf, 0, sizeof(sdnb_editor_fsReadStrBuf));
-    memcpy(sdnb_editor_fsReadStrBuf, sdnb_editor_fsReadBuf, sizeof(sdnb_editor_fsReadBuf));
+    memset(sdnb_editor_fsReadStrBuf, '\0', SDNB_EDITOR_FS_BUF_SIZE + 1);
+    memcpy(sdnb_editor_fsReadStrBuf, sdnb_editor_fsReadBuf, SDNB_EDITOR_FS_BUF_SIZE);
     sdnb_editor_insertAtCursor(editor, sdnb_editor_fsReadStrBuf, sdnb_editor_getCursor(editor));
-    memset(sdnb_editor_fsReadBuf, 0, sizeof(sdnb_editor_fsReadBuf));
+    memset(sdnb_editor_fsReadBuf, '\0', SDNB_EDITOR_FS_BUF_SIZE);
     uv_fs_read( uv_default_loop(), \
                 &sdnb_editor_fsReadReq, \
                 sdnb_editor_fsReadOpenReq.result, \
@@ -120,8 +127,8 @@ static void sdnb_editor_fsReadOnOpen(uv_fs_t *req)
         fprintf(stderr, "error opening file: %s\n", errString);
         uv_check_stop(&sdnb_editor_fsReadCheck);
     } else {
-        memset(sdnb_editor_fsReadBuf, 0, sizeof(sdnb_editor_fsReadBuf));
-        sdnb_editor_uvReadBuf = uv_buf_init(sdnb_editor_fsReadBuf, sizeof(sdnb_editor_fsReadBuf));
+        memset(sdnb_editor_fsReadBuf, '\0', SDNB_EDITOR_FS_BUF_SIZE);
+        sdnb_editor_uvReadBuf = uv_buf_init(sdnb_editor_fsReadBuf, SDNB_EDITOR_FS_BUF_SIZE);
         uv_fs_read( uv_default_loop(), \
                     &sdnb_editor_fsReadReq, \
                     req->result, \

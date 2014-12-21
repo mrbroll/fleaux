@@ -1,0 +1,7 @@
+adding something before the first line
+is the first line
+this is the line
+this is the
+replacing line four
+the fifth line this is
+and this is the end of the buffer

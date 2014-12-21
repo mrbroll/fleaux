@@ -143,7 +143,7 @@ fl_editor_t *sdnb_editor_create(const char *path)
             editor->focus = FL_EDITOR_FOCUS;
             //open and read file
             sdnb_editor_readFile(editor, path);
-            //while (uv_is_active((uv_handle_t *)(&sdnb_editor_fsReadCheck))) {}
+            while (uv_is_active((uv_handle_t *)(&sdnb_editor_fsReadCheck))) {}
         }
     }
     return editor;
@@ -152,6 +152,7 @@ fl_editor_t *sdnb_editor_create(const char *path)
 EXPORT
 void sdnb_editor_destroy(fl_editor_t *editor)
 {
+    while (uv_is_active((uv_handle_t *)(&sdnb_editor_fsReadCheck))) {}
     destroyPrivateMembers(editor->_private);
     editor->focus = FL_EDITOR_BLUR;
     editor->visibility = FL_EDITOR_HIDDEN;
@@ -295,7 +296,7 @@ void sdnb_editor_moveCursorToCursor(fl_editor_t *editor, fl_editor_cursor_t curs
     editor_privates_t *_private = (editor_privates_t *)editor->_private;
     int diff;
     if (cursor.index < _private->_cursor.index) {
-        diff = -(_private->_cursor.index = cursor.index);
+        diff = -(_private->_cursor.index - cursor.index);
     } else {
         diff = cursor.index - _private->_cursor.index;
     }

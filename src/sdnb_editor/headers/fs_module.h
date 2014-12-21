@@ -1,4 +1,5 @@
 #include "../../fleaux/headers/plugin_models/editor.h"
+#include <uv.h>
 
 #ifndef _SDNB_EDITOR_FS_MODULE_H_
 #define _SDNB_EDITOR_FS_MODULE_H_
