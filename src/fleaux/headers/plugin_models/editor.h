@@ -23,10 +23,7 @@ typedef enum fl_editor_focus_e
     FL_EDITOR_BLUR
 } fl_editor_focus_t;
 
-//caller must allocate memory
 typedef fl_editor_t *(*fl_editor_create_f)(const char *path);
-
-//caller must free memory
 typedef void (*fl_editor_destroy_f)(fl_editor_t *);
 
 typedef size_t (*fl_editor_getLength_f)(fl_editor_t *);

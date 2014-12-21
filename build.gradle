@@ -3,7 +3,6 @@
 apply plugin: 'c'
 apply plugin: 'cpp'
 
-
 model {
     buildTypes {
         debug
@@ -33,7 +32,7 @@ def libuvFleauxBuild = new File('./deps/libuv/.libs')
 
 binaries.all {
     lib library: 'uv', linkage: 'static'
-    lib project: 'deps/libsdnbc', library: 'sdnbc', linkage: 'static'
+    lib project: ':deps/libsdnbc', library: 'sdnbc', linkage: 'static'
     if (buildType == buildTypes.debug) {
         cCompiler.args '-g'
         cppCompiler.args '-g'
@@ -44,7 +43,7 @@ libraries {
     fleaux {}
     sdnb_editor {
         binaries.all {
-            lib project: 'deps/libsdnbc', library: 'sdnbc', linkage: 'static'
+            lib project: ':deps/libsdnbc', library: 'sdnbc', linkage: 'static'
             lib library: 'uv', linkage: 'static'
             if (!libuvFleauxBuild.exists()) {
                 tasks.withType(LinkSharedLibrary) {
