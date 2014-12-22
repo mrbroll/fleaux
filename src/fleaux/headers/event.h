@@ -14,7 +14,7 @@ typedef enum fl_context_type_e
 
 typedef struct fl_context_s
 {
-    fl_contextType_t type;    
+    fl_contextType_t type;
     union
     {
         char *filePath;
