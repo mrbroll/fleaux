@@ -1,1 +1,1 @@
-include 'deps/libsdnbc'
+include ':deps:libsdnbc'
