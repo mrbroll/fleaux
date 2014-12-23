@@ -73,8 +73,8 @@ model {
 }
 
 def libsdnbcBuild = new File('deps/libsdnbc/lib/libsdnbc.a')
-def gtestBuild = new File('./deps/gtest/lib/libgtest.a')
-def libuvBuild = new File('./deps/libuv/lib/libuv.a')
+def gtestBuild = new File('deps/gtest/lib/libgtest.a')
+def libuvBuild = new File('deps/libuv/lib/libuv.a')
 
 binaries.all {
     lib library: 'uv', linkage: 'static'
@@ -113,13 +113,13 @@ executables {
             lib libraries.fleaux.static
             lib libraries.sdnb_editor.static
             if (!gtestBuild.exists()) {
-                tasks.withType(LinkExecutable) {
+                tasks.withType(CppCompile) {
                     dependsOn depGtest
                 }
             }
 
             if (!libuvBuild.exists()) {
-                tasks.withType(LinkExecutable) {
+                tasks.withType(CppCompile) {
                     dependsOn depLibuv
                 }
             }
