@@ -92,13 +92,13 @@ libraries {
             lib library: 'sdnbc', linkage: 'static'
             lib library: 'uv', linkage: 'static'
             if (!libuvBuild.exists()) {
-                tasks.withType(CreateStaticLibrary) {
+                tasks.withType(CCompile) {
                     dependsOn depLibuv
                 }
             }
 
             if (!libsdnbcBuild.exists()) {
-                tasks.withType(CreateStaticLibrary) {
+                tasks.withType(CCompile) {
                     dependsOn depLibsdnbc
                 }
             }
