@@ -1,7 +1,46 @@
-// TODO
-// -CREATE PLATFORM SPECIFIC TASKS FOR INSTALLING LIBUV
 apply plugin: 'c'
 apply plugin: 'cpp'
+
+/* dependencies */
+buildscript {
+    repositories { mavenCentral() }
+    dependencies { classpath 'org.ajoberstar:gradle-git:0.12.0' }
+}
+
+import org.ajoberstar.grgit.*
+
+def handleDep = { uri, depName, buildScript ->
+    def tmpDir = new File(depName)
+    tmpDir.mkdirs()
+    Grgit.clone(dir: tmpDir, uri: uri)
+    def proc = new File(buildScript).getAbsolutePath().execute()
+    println "building ${depName}...\n${proc.text}"
+}
+
+task depLibsdnbc << {
+    def libsdnbcScript = 'deps/libsdnbc/build.sh'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        libsdnbcScript = 'deps/libsdnbc/build.bat'
+    }
+    handleDep('https://github.com/mrbroll/libsdnbc.git', 'libsdnbc', libsdnbcScript)
+}
+
+task depLibuv << {
+    def libuvScript = 'deps/libuv/build.sh'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        libuvScript = 'deps/libuv/build.bat'
+    }
+    handleDep('https://github.com/libuv/libuv.git', 'libuv', libuvScript)
+}
+
+task depGtest << {
+    def gtestScript = 'deps/gtest/build.sh'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        gtestScript = 'deps/gtest/build.bat'
+    }
+    handleDep('https://github.com/mrbroll/gtest-mirror.git', 'gtest', gtestScript)
+}
+/* end dependencies */
 
 model {
     buildTypes {
@@ -11,28 +50,35 @@ model {
 
     repositories {
         libs (PrebuiltLibraries) {
-            uv {
-                headers.srcDir './deps/libuv/include'
+            sdnbc {
+                headers.srcDir 'deps/libsdnbc/include'
                 binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file('./deps/libuv/.libs/libuv.a')
+                    staticLibraryFile = file('deps/libsdnbc/lib/libsdnbc.a')
+                }
+            }
+            uv {
+                headers.srcDir 'deps/libuv/include'
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile = file('deps/libuv/lib/libuv.a')
                 }
             }
             gtest {
-                headers.srcDir './deps/gtest/include'
+                headers.srcDir 'deps/gtest/include'
                 binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile  = file('./deps/gtest/build/libgtest.a')
+                    staticLibraryFile  = file('deps/gtest/lib/libgtest.a')
                 }
             }
         }
     }
 }
 
-def gtestFleauxBuild = new File('./deps/gtest/build')
-def libuvFleauxBuild = new File('./deps/libuv/.libs')
+def libsdnbcBuild = new File('deps/libsdnbc/lib/libsdnbc.a')
+def gtestBuild = new File('./deps/gtest/lib/libgtest.a')
+def libuvBuild = new File('./deps/libuv/lib/libuv.a')
 
 binaries.all {
     lib library: 'uv', linkage: 'static'
-    lib project: ':deps:libsdnbc', library: 'sdnbc', linkage: 'static'
+    lib library: 'sdnbc', linkage: 'static'
     if (buildType == buildTypes.debug) {
         cCompiler.args '-g'
         cppCompiler.args '-g'
@@ -43,11 +89,17 @@ libraries {
     fleaux {}
     sdnb_editor {
         binaries.all {
-            lib project: ':deps:libsdnbc', library: 'sdnbc', linkage: 'static'
+            lib library: 'sdnbc', linkage: 'static'
             lib library: 'uv', linkage: 'static'
-            if (!libuvFleauxBuild.exists()) {
-                tasks.withType(LinkSharedLibrary) {
-                    dependsOn buildUVFleaux
+            if (!libuvBuild.exists()) {
+                tasks.withType(CreateStaticLibrary) {
+                    dependsOn depLibuv
+                }
+            }
+
+            if (!libsdnbcBuild.exists()) {
+                tasks.withType(CreateStaticLibrary) {
+                    dependsOn depLibsdnbc
                 }
             }
         }
@@ -55,59 +107,29 @@ libraries {
 }
 
 executables {
-    fleaux_test {
+    test {
         binaries.all {
             lib library: 'gtest', linkage: 'static'
             lib libraries.fleaux.static
             lib libraries.sdnb_editor.static
-            if (!gtestFleauxBuild.exists()) {
+            if (!gtestBuild.exists()) {
                 tasks.withType(LinkExecutable) {
-                    dependsOn buildGtestFleaux
+                    dependsOn depGtest
                 }
             }
 
-            if (!libuvFleauxBuild.exists()) {
+            if (!libuvBuild.exists()) {
                 tasks.withType(LinkExecutable) {
-                    dependsOn buildUVFleaux
+                    dependsOn depLibuv
                 }
             }
         }
     }
 }
 
-task buildUVFleaux (type: Exec) {
-    workingDir '.'
-    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        //run batch file
-    }
-    else {
-        commandLine './build_uv.sh'
-    }
-}
-
-task buildGtestFleaux (type: Exec) {
-    workingDir './deps/gtest'
-    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        // DO WINDOWS COMPILATION
-    } else {
-        commandLine './build.sh'
-    }
-}
-
-task cleanProjDir (type: Exec) {
-    workingDir '.'
-    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        // run windows command
-    } else {
-        commandLine 'find . -name "*.swp" | xargs rm -f'
-    }
-}
-
-cleanProjDir
-
-task fleauxTests << {
-    def testName = 'fleaux_test'
-    def testDir = project.buildDir.getAbsolutePath() + '/binaries/fleaux_testExecutable/'
+task test << {
+    def testName = 'test'
+    def testDir = project.buildDir.getAbsolutePath() + '/binaries/testExecutable/'
     def releaseTest = new File(testDir + 'release/' + testName)
     def debugTest = new File(testDir + 'debug/' + testName)
     if (releaseTest.exists()) {
