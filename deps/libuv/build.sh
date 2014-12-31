@@ -1,10 +1,9 @@
 #!/usr/bin/env sh
 
-cd libuv
+cd deps/libuv/src
 ./autogen.sh
 ./configure
 make
-cd ..
-cp -r libuv/include deps/libuv
-cp libuv/.libs/libuv.a deps/libuv/lib
-rm -rf libuv
+cd ../../..
+cp -r deps/libuv/src/include deps/libuv
+cp deps/libuv/src/.libs/libuv.a deps/libuv/lib

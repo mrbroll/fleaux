@@ -1,8 +1,7 @@
 #!/usr/bin/env sh
 
-cd libsdnbc
+cd deps/libsdnbc/src
 ./gradlew releaseSdnbcStaticLibrary
 cd ..
-cp -r libsdnbc/src/sdnbc/headers deps/libsdnbc/include/sdnbc
-cp libsdnbc/build/binaries/sdnbcStaticLibrary/release/libsdnbc.a deps/libsdnbc/lib
-rm -rf libsdnbc
+cp -r deps/libsdnbc/src/src/sdnbc/headers deps/libsdnbc/include/sdnbc
+cp deps/libsdnbc/build/binaries/sdnbcStaticLibrary/release/libsdnbc.a deps/libsdnbc/lib

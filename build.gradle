@@ -2,44 +2,34 @@ apply plugin: 'c'
 apply plugin: 'cpp'
 
 /* dependencies */
-buildscript {
-    repositories { mavenCentral() }
-    dependencies { classpath 'org.ajoberstar:gradle-git:0.12.0' }
-}
-
-import org.ajoberstar.grgit.*
-
-def handleDep = { uri, depName, buildScript ->
-    def tmpDir = new File(depName)
-    tmpDir.mkdirs()
-    Grgit.clone(dir: tmpDir, uri: uri)
-    def proc = new File(buildScript).getAbsolutePath().execute()
-    println "building ${depName}...\n${proc.text}"
-}
 
 task depLibsdnbc << {
-    def libsdnbcScript = 'deps/libsdnbc/build.sh'
+    def buildScript = 'deps/libsdnbc/build.sh'
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        libsdnbcScript = 'deps/libsdnbc/build.bat'
+        buildScript = 'deps/libsdnbc/build.ps1'
     }
-    handleDep('https://github.com/mrbroll/libsdnbc.git', 'libsdnbc', libsdnbcScript)
+    def proc = new File(buildScript).getAbsolutePath().execute()
+    println "${proc.text}"
 }
 
 task depLibuv << {
-    def libuvScript = 'deps/libuv/build.sh'
+    def buildScript = 'deps/libuv/build.sh'
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        libuvScript = 'deps/libuv/build.bat'
+        buildScript = 'deps/libuv/build.ps1'
     }
-    handleDep('https://github.com/libuv/libuv.git', 'libuv', libuvScript)
+    def proc = new File(buildScript).getAbsolutePath().execute()
+    println "${proc.text}"
 }
 
 task depGtest << {
-    def gtestScript = 'deps/gtest/build.sh'
+    def buildScript = 'deps/gtest/build.sh'
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        gtestScript = 'deps/gtest/build.bat'
+        buildScript = 'deps/gtest/build.ps1'
     }
-    handleDep('https://github.com/mrbroll/gtest-mirror.git', 'gtest', gtestScript)
+    def proc = new File(buildScript).getAbsolutePath().execute()
+    println "${proc.text}"
 }
+
 /* end dependencies */
 
 model {
@@ -115,12 +105,6 @@ executables {
             if (!gtestBuild.exists()) {
                 tasks.withType(CppCompile) {
                     dependsOn depGtest
-                }
-            }
-
-            if (!libuvBuild.exists()) {
-                tasks.withType(CppCompile) {
-                    dependsOn depLibuv
                 }
             }
         }
