@@ -3,8 +3,8 @@
 #include <string>
 #include "../../../deps/libsdnb/include/sdnb/gap_vector.hh"
 
-#ifndef _FL_EDITOR_H_
-#define _FL_EDITOR_H_
+#ifndef FLEAUX_EDITOR_H_
+#define FLEAUX_EDITOR_H_
 
 using namespace std;
 using namespace SDNB;
@@ -30,6 +30,10 @@ namespace Fleaux
             /* member functions */
             void insert(Cursor curs, string input);
             void remove(Cursor curs, int length);
+            Cursor& begin(void);
+            Cursor& end(void);
+            Cursor& getCursor(size_t index = 0);
+            Cursor& getCursor(size_t x = 0, size_t y = 0);
             
         private:
             /* data members */
@@ -93,6 +97,8 @@ namespace Fleaux
         private:
             /* data members */
             Editor* __parent;
+
+            /* member functions */
     };
 
 }
