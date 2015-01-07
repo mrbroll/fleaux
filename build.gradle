@@ -2,16 +2,6 @@ apply plugin: 'c'
 apply plugin: 'cpp'
 
 /* dependencies */
-
-task depLibsdnbc << {
-    def buildScript = 'deps/libsdnbc/build.sh'
-    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        buildScript = 'deps/libsdnbc/build.ps1'
-    }
-    def proc = new File(buildScript).getAbsolutePath().execute()
-    println "${proc.text}"
-}
-
 task depLibuv << {
     def buildScript = 'deps/libuv/build.sh'
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
@@ -40,12 +30,6 @@ model {
 
     repositories {
         libs (PrebuiltLibraries) {
-            sdnbc {
-                headers.srcDir 'deps/libsdnbc/include'
-                binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file('deps/libsdnbc/lib/libsdnbc.a')
-                }
-            }
             uv {
                 headers.srcDir 'deps/libuv/include'
                 binaries.withType(StaticLibraryBinary) {
@@ -62,13 +46,11 @@ model {
     }
 }
 
-def libsdnbcBuild = new File('deps/libsdnbc/lib/libsdnbc.a')
 def gtestBuild = new File('deps/gtest/lib/libgtest.a')
 def libuvBuild = new File('deps/libuv/lib/libuv.a')
 
 binaries.all {
     lib library: 'uv', linkage: 'static'
-    lib library: 'sdnbc', linkage: 'static'
     if (buildType == buildTypes.debug) {
         cCompiler.args '-g'
         cppCompiler.args '-g'
@@ -76,20 +58,12 @@ binaries.all {
 }
 
 libraries {
-    fleaux {}
-    sdnb_editor {
+    editor {
         binaries.all {
-            lib library: 'sdnbc', linkage: 'static'
             lib library: 'uv', linkage: 'static'
             if (!libuvBuild.exists()) {
-                tasks.withType(CCompile) {
+                tasks.withType(CppCompile) {
                     dependsOn depLibuv
-                }
-            }
-
-            if (!libsdnbcBuild.exists()) {
-                tasks.withType(CCompile) {
-                    dependsOn depLibsdnbc
                 }
             }
         }
@@ -100,8 +74,6 @@ executables {
     test {
         binaries.all {
             lib library: 'gtest', linkage: 'static'
-            lib libraries.fleaux.static
-            lib libraries.sdnb_editor.static
             if (!gtestBuild.exists()) {
                 tasks.withType(CppCompile) {
                     dependsOn depGtest
