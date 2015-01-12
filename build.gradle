@@ -50,6 +50,7 @@ def gtestBuild = new File('deps/gtest/lib/libgtest.a')
 def libuvBuild = new File('deps/libuv/lib/libuv.a')
 
 binaries.all {
+    cppCompiler.args '-std=c++11'
     lib library: 'uv', linkage: 'static'
     if (buildType == buildTypes.debug) {
         cCompiler.args '-g'
@@ -74,6 +75,7 @@ executables {
     test {
         binaries.all {
             lib library: 'gtest', linkage: 'static'
+            linker.args '-pthread'
             if (!gtestBuild.exists()) {
                 tasks.withType(CppCompile) {
                     dependsOn depGtest

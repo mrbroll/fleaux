@@ -92,8 +92,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin14.0.0
-host_triplet = x86_64-apple-darwin14.0.0
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
 #am__append_1 = -pthread
 #am__append_2 = include/uv-win.h include/tree.h
 #am__append_3 = -I$(top_srcdir)/src/win \
@@ -177,24 +177,24 @@ am__append_11 = test/runner-unix.c \
 #am__append_17 = src/unix/android-ifaddrs.c \
 #                    src/unix/pthread-fixes.c
 
-am__append_18 = include/uv-darwin.h
-am__append_19 = -D_DARWIN_USE_64_BIT_INODE=1 \
-	-D_DARWIN_UNLIMITED_SELECT=1
-am__append_20 = src/unix/darwin.c \
-                    src/unix/darwin-proctitle.c \
-                    src/unix/fsevents.c \
-                    src/unix/kqueue.c \
-                    src/unix/proctitle.c
+#am__append_18 = include/uv-darwin.h
+#am__append_19 = -D_DARWIN_USE_64_BIT_INODE=1 \
+#	-D_DARWIN_UNLIMITED_SELECT=1
+#am__append_20 = src/unix/darwin.c \
+#                    src/unix/darwin-proctitle.c \
+#                    src/unix/fsevents.c \
+#                    src/unix/kqueue.c \
+#                    src/unix/proctitle.c
 
 #am__append_21 = include/uv-bsd.h
 #am__append_22 = include/uv-bsd.h
 #am__append_23 = src/unix/freebsd.c src/unix/kqueue.c
-#am__append_24 = include/uv-linux.h
-#am__append_25 = src/unix/linux-core.c \
-#                    src/unix/linux-inotify.c \
-#                    src/unix/linux-syscalls.c \
-#                    src/unix/linux-syscalls.h \
-#                    src/unix/proctitle.c
+am__append_24 = include/uv-linux.h
+am__append_25 = src/unix/linux-core.c \
+                    src/unix/linux-inotify.c \
+                    src/unix/linux-syscalls.c \
+                    src/unix/linux-syscalls.h \
+                    src/unix/proctitle.c
 
 #am__append_26 = include/uv-bsd.h
 #am__append_27 = src/unix/kqueue.c src/unix/netbsd.c
@@ -321,17 +321,17 @@ am__objects_2 = src/unix/libuv_la-async.lo \
 #am__objects_3 = src/unix/libuv_la-aix.lo
 #am__objects_4 = src/unix/libuv_la-android-ifaddrs.lo \
 #	src/unix/libuv_la-pthread-fixes.lo
-am__objects_5 = src/unix/libuv_la-darwin.lo \
-	src/unix/libuv_la-darwin-proctitle.lo \
-	src/unix/libuv_la-fsevents.lo \
-	src/unix/libuv_la-kqueue.lo \
-	src/unix/libuv_la-proctitle.lo
+#am__objects_5 = src/unix/libuv_la-darwin.lo \
+#	src/unix/libuv_la-darwin-proctitle.lo \
+#	src/unix/libuv_la-fsevents.lo \
+#	src/unix/libuv_la-kqueue.lo \
+#	src/unix/libuv_la-proctitle.lo
 #am__objects_6 = src/unix/libuv_la-freebsd.lo \
 #	src/unix/libuv_la-kqueue.lo
-#am__objects_7 = src/unix/libuv_la-linux-core.lo \
-#	src/unix/libuv_la-linux-inotify.lo \
-#	src/unix/libuv_la-linux-syscalls.lo \
-#	src/unix/libuv_la-proctitle.lo
+am__objects_7 = src/unix/libuv_la-linux-core.lo \
+	src/unix/libuv_la-linux-inotify.lo \
+	src/unix/libuv_la-linux-syscalls.lo \
+	src/unix/libuv_la-proctitle.lo
 #am__objects_8 = src/unix/libuv_la-kqueue.lo \
 #	src/unix/libuv_la-netbsd.lo
 #am__objects_9 = src/unix/libuv_la-kqueue.lo \
@@ -651,54 +651,54 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /Users/mrbroll/projects/fleaux/deps/libuv/src/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/michael/Projects/fleaux/deps/libuv/src/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 0
 AR = ar
-AUTOCONF = ${SHELL} /Users/mrbroll/projects/fleaux/deps/libuv/src/missing autoconf
-AUTOHEADER = ${SHELL} /Users/mrbroll/projects/fleaux/deps/libuv/src/missing autoheader
-AUTOMAKE = ${SHELL} /Users/mrbroll/projects/fleaux/deps/libuv/src/missing automake-1.14
-AWK = awk
+AUTOCONF = ${SHELL} /home/michael/Projects/fleaux/deps/libuv/src/missing autoconf
+AUTOHEADER = ${SHELL} /home/michael/Projects/fleaux/deps/libuv/src/missing autoheader
+AUTOMAKE = ${SHELL} /home/michael/Projects/fleaux/deps/libuv/src/missing automake-1.14
+AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2 -Wno-dollar-in-identifier-extension
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"libuv\" -DPACKAGE_TARNAME=\"libuv\" -DPACKAGE_VERSION=\"1.1.0\" -DPACKAGE_STRING=\"libuv\ 1.1.0\" -DPACKAGE_BUGREPORT=\"https://github.com/libuv/libuv/issues\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libuv\" -DVERSION=\"1.1.0\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_LIBDL=1 -DHAVE_LIBPTHREAD=1
+DEFS = -DPACKAGE_NAME=\"libuv\" -DPACKAGE_TARNAME=\"libuv\" -DPACKAGE_VERSION=\"1.1.0\" -DPACKAGE_STRING=\"libuv\ 1.1.0\" -DPACKAGE_BUGREPORT=\"https://github.com/libuv/libuv/issues\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libuv\" -DVERSION=\"1.1.0\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_LIBDL=1 -DHAVE_LIBNSL=1 -DHAVE_LIBPTHREAD=1 -DHAVE_LIBRT=1
 DEPDIR = .deps
 DLLTOOL = false
-DSYMUTIL = dsymutil
+DSYMUTIL = 
 DUMPBIN = 
-ECHO_C = \c
-ECHO_N = 
+ECHO_C = 
+ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-FGREP = /usr/bin/grep -F
-GREP = /usr/bin/grep
+FGREP = /bin/grep -F
+GREP = /bin/grep
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
+LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lpthread -ldl  $(am__append_4)
+LIBS = -lrt -lpthread -lnsl -ldl  $(am__append_4)
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LIPO = lipo
+LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /Users/mrbroll/projects/fleaux/deps/libuv/src/missing makeinfo
+MAKEINFO = ${SHELL} /home/michael/Projects/fleaux/deps/libuv/src/missing makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = ./install-sh -c -d
-NM = /usr/bin/nm
-NMEDIT = nmedit
-OBJDUMP = false
+MKDIR_P = /bin/mkdir -p
+NM = /usr/bin/nm -B
+NMEDIT = 
+OBJDUMP = objdump
 OBJEXT = o
-OTOOL = otool
-OTOOL64 = :
+OTOOL = 
+OTOOL64 = 
 PACKAGE = libuv
 PACKAGE_BUGREPORT = https://github.com/libuv/libuv/issues
 PACKAGE_NAME = libuv
@@ -709,15 +709,15 @@ PACKAGE_VERSION = 1.1.0
 PATH_SEPARATOR = :
 PKG_CONFIG = yes
 RANLIB = ranlib
-SED = /usr/bin/sed
+SED = /bin/sed
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = strip
 VERSION = 1.1.0
-abs_builddir = /Users/mrbroll/projects/fleaux/deps/libuv/src
-abs_srcdir = /Users/mrbroll/projects/fleaux/deps/libuv/src
-abs_top_builddir = /Users/mrbroll/projects/fleaux/deps/libuv/src
-abs_top_srcdir = /Users/mrbroll/projects/fleaux/deps/libuv/src
+abs_builddir = /home/michael/Projects/fleaux/deps/libuv/src
+abs_srcdir = /home/michael/Projects/fleaux/deps/libuv/src
+abs_top_builddir = /home/michael/Projects/fleaux/deps/libuv/src
+abs_top_srcdir = /home/michael/Projects/fleaux/deps/libuv/src
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_DUMPBIN = 
@@ -727,26 +727,26 @@ am__quote =
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin14.0.0
+build = x86_64-unknown-linux-gnu
 build_alias = 
 build_cpu = x86_64
-build_os = darwin14.0.0
-build_vendor = apple
+build_os = linux-gnu
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin14.0.0
+host = x86_64-unknown-linux-gnu
 host_alias = 
 host_cpu = x86_64
-host_os = darwin14.0.0
-host_vendor = apple
+host_os = linux-gnu
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/mrbroll/projects/fleaux/deps/libuv/src/install-sh
+install_sh = ${SHELL} /home/michael/Projects/fleaux/deps/libuv/src/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale

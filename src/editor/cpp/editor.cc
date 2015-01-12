@@ -1,237 +1,180 @@
+#include <algorithm>
+#include <iostream>
 #include <stdlib.h>
 #include <string.h>
-#include <uv.h>
+#include "../../../deps/libuv/include/uv.h"
 #include "../headers/editor.hh"
 #include "../../../deps/libsdnb/include/sdnb/gap_vector.hh"
 
-//we're always going to count forward, because it makes for stupid simple code
-//
-//if there are performance issues with this, we'll probably introduce an
-//indexing mechanism for newlines
-static fl_editor_cursor_t xyToCursor(fl_editor_t *editor, fl_editor_cursor_t from, size_t x, size_t y)
+using namespace std;
+using namespace SDNB;
+
+/* Fleaux::Editor */
+Fleaux::Editor::Editor(void)
 {
-    editor_privates_t *_private = (editor_privates_t *)editor->_private;
-    fl_editor_cursor_t cursor;
-    if (y < from.y || (y == from.y && x < from.x)) { //behind cursor
-        cursor = (fl_editor_cursor_t) { .index = 0, \
-                                        .x = 0, \
-                                        .y = 0 };
-    } else { //at or ahead of cursor
-        cursor = from;
+    __data = new GapVector<char>();
+    __cursor = new UserCursor();
+}
+
+Fleaux::Editor::~Editor(void)
+{
+    delete __data;
+    delete __cursor;
+}
+
+Fleaux::Editor&
+Fleaux::Editor::operator=(const Fleaux::Editor& arg)
+{
+    if (__data != NULL) {
+        delete __data;
     }
-    char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, cursor.index);
-    while (cursor.y <= y && cursor.index < _private->_bufLength) {
-        while (iterChar != '\n' && iterChar != '\0' && (cursor.y < y || (cursor.y == y && cursor.x < x))) {
-            iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-            cursor.index++;
-            cursor.x++;
+    
+    if (__cursor != NULL) {
+        delete __cursor;
+    }
+    __data = new GapVector<char>(*(arg.__data));
+    __cursor = new UserCursor(*(arg.__cursor));
+}
+
+ostream&
+operator<<(ostream& os, const Fleaux::Editor& ed)
+{
+    cout << string(ed.__data->begin(), ed.__data->end());
+}
+
+istream&
+operator>>(istream& is, Fleaux::Editor& ed)
+{
+    string str;
+    cin >> str;
+    ed.userCursor().insert(str);
+}
+
+Fleaux::Cursor
+Fleaux::Editor::begin(void)
+{
+    Cursor curs;
+    return curs;
+}
+
+Fleaux::Cursor
+Fleaux::Editor::end(void)
+{
+    Cursor curs;
+    curs += __data->size;
+    return curs;
+}
+
+Fleaux::Cursor
+Fleaux::Editor::cursor(void)
+{
+    return *__cursor;
+}
+
+/* Fleaux::Cursor */
+char&
+Fleaux::Cursor::operator*(void)
+{
+    GapVector<char>::iterator it = __editor->__data->begin() + __index;
+    return *it;
+}
+
+Fleaux::Cursor&
+Fleaux::Cursor::operator=(const Fleaux::Cursor& curs)
+{
+    __index = curs.__index;
+    __x = curs.__x;
+    __y = curs.__y;
+    __editor = curs.__editor;
+}
+
+Fleaux::Cursor&
+Fleaux::Cursor::operator+=(int offset)
+{
+    if (offset < 0) {
+    } else if (offset > 0) {
+        
+    }
+
+}
+
+Fleaux::Cursor&
+Fleaux::Cursor::operator-=(int offset)
+{
+}
+
+Fleaux::Cursor&
+Fleaux::Cursor::operator++(void)
+{
+}
+
+Fleaux::Cursor&
+Fleaux::Cursor::operator--(void)
+{
+}
+
+Fleaux::Cursor
+operator+(Fleaux::Cursor curs, int offset)
+{
+}
+
+Fleaux::Cursor
+operator+(int offset, const Fleaux::Cursor& curs)
+{
+}
+
+Fleaux::Cursor
+operator-(Fleaux::Cursor curs, int offset)
+{
+}
+
+Fleaux::Cursor
+operator-(int offset, const Fleaux::Cursor&)
+{
+}
+
+void
+Fleaux::Cursor::insert(string input)
+{
+}
+
+void
+Fleaux::Cursor::remove(int length)
+{
+}
+
+void
+Fleaux::Cursor::moveVert(int offset)
+{
+}
+
+void
+Fleaux::Cursor::moveHoriz(int offset)
+{
+}
+
+/* Just start at the beginning and count forward.
+ * This is a brute force approach, but I just want to 
+ * get this working. Once I do, I can come back and
+ * optimize this
+ */
+void
+Fleaux::Cursor::getXY(void)
+{
+    Fleaux::Cursor curs = __editor->begin();
+   size_t i = 0;
+   __x = 0;
+   __y = 0;
+   while (curs < *this) {
+        if (*curs == '\n') {
+            __y++;
         }
 
-        if (iterChar == '\n' && cursor.y < y) {
-            iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-            cursor.index++;
-            cursor.y++;
-            cursor.x = 0;
+        if (i > 0 && *(curs - 1) == '\n') {
+            __x = 0;
         } else {
-            break;
+            __x++;
         }
+        curs++;
     }
-    return cursor;
-}
-
-static fl_editor_cursor_t indexToCursor(fl_editor_t *editor, fl_editor_cursor_t from, size_t index)
-{
-    editor_privates_t *_private = (editor_privates_t *)editor->_private;
-    fl_editor_cursor_t cursor;
-    if (index > _private->_bufLength) {
-        index = _private->_bufLength;
-    }
-
-    if (index < from.index) {
-        cursor = (fl_editor_cursor_t) {  .index = 0, \
-                                            .x = 0, \
-                                            .y = 0 };
-    } else { //index >= _private->_cursor.index
-        cursor = from;
-    }
-    char iterChar = sdnb_gapBuffer_iterSet(_private->_buf, cursor.index);
-    while (cursor.index < index) {
-        while (iterChar != '\n' && iterChar != '\0' && cursor.index < index) {
-            iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-            cursor.index++;
-            cursor.x++;
-        }
-
-        if (iterChar == '\n' && cursor.index < index) {
-            iterChar = sdnb_gapBuffer_iterNext(_private->_buf);
-            cursor.index++;
-            cursor.y++;
-            cursor.x = 0;
-        } else {
-            break;
-        }
-    }
-    return cursor;
-}
-
-static fl_editor_cursor_t getStrDiff(const char *str)
-{
-    fl_editor_cursor_t cursor = (fl_editor_cursor_t) {  .index = 0, \
-                                                        .x = 0, \
-                                                        .y = 0 };
-    int lastCharWasNewline = 0;
-    while (str[cursor.index] != '\0') {
-        if (str[cursor.index] == '\n') {
-            cursor.y++;
-            cursor.x++;
-            lastCharWasNewline = 1;
-        } else if (lastCharWasNewline) {
-            cursor.x = 0;
-        } else {
-            cursor.x++;
-        }
-        cursor.index++;
-    }
-    return cursor;
-}
-
-static void sdnb_editor_insertAtCursor(fl_editor_t *editor, const char *str, fl_editor_cursor_t cursor)
-{
-    editor_privates_t *_private = (editor_privates_t *)editor->_private;
-    size_t strLength = strlen(str);
-    int diff;
-    if (cursor.index < _private->_cursor.index) {
-        diff = -(_private->_cursor.index - cursor.index);
-    } else {
-        diff = cursor.index - _private->_cursor.index;
-    }
-
-    if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
-        sdnb_gapBuffer_insertString(_private->_buf, str, strLength);
-        sdnb_gapBuffer_moveGap(_private->_buf, -diff);
-        _private->_bufLength += strLength;
-        if (diff <= 0) {
-            fl_editor_cursor_t cursorDiff = getStrDiff(str);
-            _private->_cursor.index += cursorDiff.index;
-            _private->_cursor.y += cursorDiff.y;
-            if (cursor.y == _private->_cursor.y) {
-                _private->_cursor.x += cursorDiff.x;
-            }
-        }
-    }
-}
-
-EXPORT
-void sdnb_editor_insertAtIndex(fl_editor_t *editor, const char *str, size_t index)
-{
-    uv_rwlock_wrlock(&(((editor_privates_t *)editor->_private)->_bufLock));
-    fl_editor_cursor_t cursor = indexToCursor(editor, ((editor_privates_t *)editor->_private)->_cursor, index);
-    sdnb_editor_insertAtCursor(editor, str, cursor);
-    uv_rwlock_wrunlock(&(((editor_privates_t *)editor->_private)->_bufLock));
-}
-
-EXPORT
-void sdnb_editor_insertAtXY(fl_editor_t *editor, const char *str, size_t x, size_t y)
-{
-    uv_rwlock_wrlock(&(((editor_privates_t *)editor->_private)->_bufLock));
-    fl_editor_cursor_t cursor = xyToCursor(editor, ((editor_privates_t *)editor->_private)->_cursor, x, y);
-    sdnb_editor_insertAtCursor(editor, str, cursor);
-    uv_rwlock_wrunlock(&(((editor_privates_t *)editor->_private)->_bufLock));
-}
-
-static void sdnb_editor_removeAtCursor(fl_editor_t *editor, fl_editor_cursor_t from, size_t length)
-{
-    if (length > 0) {
-        editor_privates_t *_private = (editor_privates_t *)editor->_private;
-        size_t toIndex;
-        if (from.index + length >= _private->_bufLength) {
-            toIndex = _private->_bufLength - 1;
-        } else {
-            toIndex = from.index + length - 1;
-        }
-        fl_editor_cursor_t to = indexToCursor(editor, from, toIndex);
-        fl_editor_cursor_t newCursor;
-        int diff;
-        int removeLength;
-        int backDiff;
-        if (to.index < _private->_cursor.index) {
-            diff = -(_private->_cursor.index - to.index) + 1;
-            removeLength = -length;
-            backDiff = -diff;
-            if (to.x == _private->_cursor.x) {
-                newCursor.x = _private->_cursor.x + from.x;
-            }
-            newCursor.y = _private->_cursor.y - (to.y - from.y);
-            newCursor.index = _private->_cursor.index - length;
-        } else if (from.index < _private->_cursor.index && to.index >= _private->_cursor.index) {
-            diff = -(_private->_cursor.index - from.index);
-            removeLength = length;
-            backDiff = 0;
-            newCursor = from;
-        } else {
-            diff = from.index - _private->_cursor.index;
-            removeLength = length;
-            backDiff = -diff;
-            newCursor = _private->_cursor;
-        }
-
-        if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
-            sdnb_gapBuffer_remove(_private->_buf, removeLength);
-            sdnb_gapBuffer_moveGap(_private->_buf, backDiff);
-            _private->_bufLength -= (to.index - from.index + 1);
-            _private->_cursor = newCursor;
-        }
-    }
-}
-
-
-EXPORT
-void sdnb_editor_removeAtIndex(fl_editor_t *editor, size_t index, size_t length)
-{
-    uv_rwlock_wrlock(&(((editor_privates_t *)editor->_private)->_bufLock));
-    fl_editor_cursor_t cursor = indexToCursor(editor, ((editor_privates_t *)editor->_private)->_cursor, index);
-    sdnb_editor_removeAtCursor(editor, cursor, length);
-    uv_rwlock_wrunlock(&(((editor_privates_t *)editor->_private)->_bufLock));
-}
-
-EXPORT
-void sdnb_editor_removeAtXY(fl_editor_t *editor, size_t x, size_t y, size_t length)
-{
-    uv_rwlock_wrlock(&(((editor_privates_t *)editor->_private)->_bufLock));
-    fl_editor_cursor_t cursor = xyToCursor(editor, ((editor_privates_t *)editor->_private)->_cursor, x, y);
-    sdnb_editor_removeAtCursor(editor, cursor, length);
-    uv_rwlock_wrunlock(&(((editor_privates_t *)editor->_private)->_bufLock));
-}
-
-void sdnb_editor_moveCursorToCursor(fl_editor_t *editor, fl_editor_cursor_t cursor)
-{
-    editor_privates_t *_private = (editor_privates_t *)editor->_private;
-    int diff;
-    if (cursor.index < _private->_cursor.index) {
-        diff = -(_private->_cursor.index - cursor.index);
-    } else {
-        diff = cursor.index - _private->_cursor.index;
-    }
-
-    if (sdnb_gapBuffer_moveGap(_private->_buf, diff) == 0) {
-        _private->_cursor = cursor;
-    }
-}
-
-EXPORT
-void sdnb_editor_moveCursorToIndex(fl_editor_t *editor, size_t index)
-{
-    uv_rwlock_wrlock(&((editor_privates_t *)editor->_private)->_bufLock);
-    fl_editor_cursor_t cursor = indexToCursor(editor, ((editor_privates_t *)editor->_private)->_cursor, index);
-    sdnb_editor_moveCursorToCursor(editor, cursor);
-    uv_rwlock_wrunlock(&((editor_privates_t *)editor->_private)->_bufLock);
-}
-
-EXPORT
-void sdnb_editor_moveCursorToXY(fl_editor_t *editor, size_t x, size_t y)
-{
-    uv_rwlock_wrlock(&((editor_privates_t *)editor->_private)->_bufLock);
-    fl_editor_cursor_t cursor = xyToCursor(editor, ((editor_privates_t *)editor->_private)->_cursor, x, y);
-    sdnb_editor_moveCursorToCursor(editor, cursor);
-    uv_rwlock_wrunlock(&((editor_privates_t *)editor->_private)->_bufLock);
 }

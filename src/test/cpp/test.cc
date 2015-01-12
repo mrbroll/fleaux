@@ -1,6 +1,4 @@
-#include "../../fleaux/headers/fleaux.h"
-#include "../../sdnb_editor/headers/editor.h"
-#include "../../sdnb_editor/headers/fs_module.h"
+#include "../../editor/headers/editor.hh"
 #include "gtest/gtest.h"
 #include <uv.h>
 #include <iostream>
@@ -9,7 +7,7 @@
 #include <cstring>
 
 using namespace std;
-
+using namespace Fleaux;
 
 
 namespace {
@@ -18,20 +16,20 @@ namespace {
         protected:
             SDNBEditorTest()
             {
-                ed0 = sdnb_editor_create("test/editor/input.txt");
-                ed1 = sdnb_editor_create("test/editor/input.txt");
+                ed0 = new Editor();
+                ed1 = new Editor();
             }
 
             ~SDNBEditorTest()
             {
-                sdnb_editor_destroy(ed0);
-                sdnb_editor_destroy(ed1);
+                delete ed0;
+                delete ed1;
             }
 
-            fl_editor_t *ed0;
-            fl_editor_t *ed1;
+            Editor* ed0;
+            Editor* ed1;
     };
-
+/*
     TEST_F(SDNBEditorTest, InsertTest)
     {
         ifstream file("test/editor/insert_test.txt");
@@ -101,7 +99,7 @@ namespace {
         ASSERT_STREQ(str_buf.str().c_str(), testString0);
 
         sdnb_editor_writeFile(ed0, "test/editor/output.txt");
-    }
+    }*/
 }
 
 int main(int argc, char **argv)
