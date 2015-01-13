@@ -2,7 +2,6 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
-#include "../../../deps/libuv/include/uv.h"
 #include "../headers/editor.hh"
 #include "../../../deps/libsdnb/include/sdnb/gap_vector.hh"
 
@@ -12,169 +11,118 @@ using namespace SDNB;
 /* Fleaux::Editor */
 Fleaux::Editor::Editor(void)
 {
-    __data = new GapVector<char>();
-    __cursor = new UserCursor();
+    _data = new GapVector<char>();
+    if (_data == NULL) {
+        cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
+        exit(1);
+    }
+
+    cursor = new Cursor(this);
+    if (cursor == NULL) {
+        cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
+        exit(1);
+    }
+
+    size = 0;
+    numLines = 0;
 }
 
 Fleaux::Editor::~Editor(void)
 {
-    delete __data;
-    delete __cursor;
-}
-
-Fleaux::Editor&
-Fleaux::Editor::operator=(const Fleaux::Editor& arg)
-{
-    if (__data != NULL) {
-        delete __data;
-    }
-    
-    if (__cursor != NULL) {
-        delete __cursor;
-    }
-    __data = new GapVector<char>(*(arg.__data));
-    __cursor = new UserCursor(*(arg.__cursor));
-}
-
-ostream&
-operator<<(ostream& os, const Fleaux::Editor& ed)
-{
-    cout << string(ed.__data->begin(), ed.__data->end());
-}
-
-istream&
-operator>>(istream& is, Fleaux::Editor& ed)
-{
-    string str;
-    cin >> str;
-    ed.userCursor().insert(str);
-}
-
-Fleaux::Cursor
-Fleaux::Editor::begin(void)
-{
-    Cursor curs;
-    return curs;
-}
-
-Fleaux::Cursor
-Fleaux::Editor::end(void)
-{
-    Cursor curs;
-    curs += __data->size;
-    return curs;
-}
-
-Fleaux::Cursor
-Fleaux::Editor::cursor(void)
-{
-    return *__cursor;
+    delete _data;
+    delete cursor;
 }
 
 /* Fleaux::Cursor */
-char&
-Fleaux::Cursor::operator*(void)
-{
-    GapVector<char>::iterator it = __editor->__data->begin() + __index;
-    return *it;
-}
-
-Fleaux::Cursor&
-Fleaux::Cursor::operator=(const Fleaux::Cursor& curs)
-{
-    __index = curs.__index;
-    __x = curs.__x;
-    __y = curs.__y;
-    __editor = curs.__editor;
-}
-
-Fleaux::Cursor&
-Fleaux::Cursor::operator+=(int offset)
-{
-    if (offset < 0) {
-    } else if (offset > 0) {
-        
-    }
-
-}
-
-Fleaux::Cursor&
-Fleaux::Cursor::operator-=(int offset)
-{
-}
-
-Fleaux::Cursor&
-Fleaux::Cursor::operator++(void)
-{
-}
-
-Fleaux::Cursor&
-Fleaux::Cursor::operator--(void)
-{
-}
-
-Fleaux::Cursor
-operator+(Fleaux::Cursor curs, int offset)
-{
-}
-
-Fleaux::Cursor
-operator+(int offset, const Fleaux::Cursor& curs)
-{
-}
-
-Fleaux::Cursor
-operator-(Fleaux::Cursor curs, int offset)
-{
-}
-
-Fleaux::Cursor
-operator-(int offset, const Fleaux::Cursor&)
-{
-}
-
 void
-Fleaux::Cursor::insert(string input)
+Fleaux::Cursor::insert(const string& input)
 {
+    _editor->_data->insert(input.begin(), input.end());
+    _index += input.size();
+    _getXY();
 }
 
 void
 Fleaux::Cursor::remove(int length)
 {
+    length = _editor->_data->remove(length);
+    if (length < 0) {
+        _index += length;
+        _getXY();
+    }
 }
 
 void
 Fleaux::Cursor::moveVert(int offset)
 {
+    if (offset < 0) {
+        offset = max(offset, -(int)_y);
+    } else if (offset > 0) {
+        offset = min(offset, (int)_editor->numLines - (int)_y);
+    }
+    _y += offset;
+    _getIndex();
 }
 
 void
 Fleaux::Cursor::moveHoriz(int offset)
 {
+    if (offset < 0) {
+        offset = max(offset, -(int)_x);
+    } else if (offset > 0) {
+        size_t rIndex = _x;
+        GapVector<char>::iterator it = _editor->_data->begin() + _index;
+        GapVector<char>::iterator end = _editor->_data->end();
+        while (it != end && *(++it) != '\n') {
+            rIndex++;
+        }
+        offset = min(offset, (int)rIndex);
+    }
+    _x += offset;
+    _index += offset;
 }
 
 /* Just start at the beginning and count forward.
  * This is a brute force approach, but I just want to 
  * get this working. Once I do, I can come back and
- * optimize this
+ * optimize these
  */
 void
-Fleaux::Cursor::getXY(void)
+Fleaux::Cursor::_getXY(void)
 {
-    Fleaux::Cursor curs = __editor->begin();
-   size_t i = 0;
-   __x = 0;
-   __y = 0;
-   while (curs < *this) {
-        if (*curs == '\n') {
-            __y++;
+    if (_editor->size > 0) {
+        GapVector<char>::iterator it = _editor->_data->begin();
+        GapVector<char>::iterator end = it + _index;
+        _x = 0;
+        _y = 0;
+        while (++it != end) {
+            if (*(it - 1) == '\n') {
+                _x = 0;
+                _y++;
+            } else {
+                _x++;
+            }
+        }
+    }
+}
+
+void
+Fleaux::Cursor::_getIndex(void)
+{
+    if (_editor->size > 0) {
+        size_t x = 0;
+        size_t y = 0;
+        _index = 0;
+        GapVector<char>::iterator it = _editor->_data->begin();
+        GapVector<char>::iterator end = _editor->_data->end();
+        while (++y < _y) {
+            while (it != end && *(++it) != '\n') {
+                _index++;
+            }
         }
 
-        if (i > 0 && *(curs - 1) == '\n') {
-            __x = 0;
-        } else {
-            __x++;
+        while (it != end && *(++it) != '\n' && ++x < _x ) {
+            _index++;
         }
-        curs++;
     }
 }

@@ -93,7 +93,7 @@ namespace SDNB
                 size  += length;
             };
 
-            void
+            int
             remove(int length)
             {
                 if (length < 0) {
@@ -106,9 +106,10 @@ namespace SDNB
                     size -= length;
                 }
                 __shrink();
+                return length;
             };
 
-            void
+            int
             moveGap(int distance)
             {
                 if (distance < 0) {
@@ -125,6 +126,7 @@ namespace SDNB
 
                 __gapBegin += distance;
                 __gapEnd += distance;
+                return distance;
             };
 
             /* nested classe(s) */

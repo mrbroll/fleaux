@@ -74,6 +74,7 @@ libraries {
 executables {
     test {
         binaries.all {
+            lib libraries.editor.static
             lib library: 'gtest', linkage: 'static'
             linker.args '-pthread'
             if (!gtestBuild.exists()) {
