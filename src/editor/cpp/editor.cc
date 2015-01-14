@@ -39,6 +39,7 @@ Fleaux::Cursor::insert(const string& input)
 {
     _editor->_data->insert(input.begin(), input.end());
     _index += input.size();
+    _editor->size += input.size();
     _getXY();
 }
 
@@ -50,10 +51,11 @@ Fleaux::Cursor::remove(int length)
         _index += length;
         _getXY();
     }
+    _editor->size -= abs(length);
 }
 
 void
-Fleaux::Cursor::moveVert(int offset)
+Fleaux::Cursor::moveV(int offset)
 {
     if (offset < 0) {
         offset = max(offset, -(int)_y);
@@ -65,7 +67,7 @@ Fleaux::Cursor::moveVert(int offset)
 }
 
 void
-Fleaux::Cursor::moveHoriz(int offset)
+Fleaux::Cursor::moveH(int offset)
 {
     if (offset < 0) {
         offset = max(offset, -(int)_x);
@@ -96,7 +98,7 @@ Fleaux::Cursor::_getXY(void)
         _x = 0;
         _y = 0;
         while (++it != end) {
-            if (*(it - 1) == '\n') {
+            if ((_x || _y) && (*(it - 1) == '\n')) {
                 _x = 0;
                 _y++;
             } else {

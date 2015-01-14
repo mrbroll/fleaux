@@ -61,8 +61,8 @@ namespace Fleaux
             inline size_t getIndex(void) { return _index; };
             inline size_t getX(void) { return _x; };
             inline size_t getY(void) { return _y; };
-            void moveVert(int offset);
-            void moveHoriz(int offset);
+            void moveV(int offset);
+            void moveH(int offset);
 
         protected:
             /* data members */
