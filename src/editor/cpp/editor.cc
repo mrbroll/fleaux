@@ -40,7 +40,7 @@ Fleaux::Cursor::insert(const string& input)
     _editor->_data->insert(input.begin(), input.end());
     _index += input.size();
     _editor->size += input.size();
-    _getXY();
+    _setXY();
 }
 
 void
@@ -49,7 +49,7 @@ Fleaux::Cursor::remove(int length)
     length = _editor->_data->remove(length);
     if (length < 0) {
         _index += length;
-        _getXY();
+        _setXY();
     }
     _editor->size -= abs(length);
 }
@@ -57,18 +57,19 @@ Fleaux::Cursor::remove(int length)
 void
 Fleaux::Cursor::moveV(int offset)
 {
+    size_t oldIndex = _index;
     if (offset < 0) {
         offset = max(offset, -(int)_y);
-    } else if (offset > 0) {
-        offset = min(offset, (int)_editor->numLines - (int)_y);
     }
     _y += offset;
-    _getIndex();
+    _setIndex();
+    _editor->_data->moveGap((int)_index - (int)oldIndex);
 }
 
 void
 Fleaux::Cursor::moveH(int offset)
 {
+    size_t oldIndex = _index;
     if (offset < 0) {
         offset = max(offset, -(int)_x);
     } else if (offset > 0) {
@@ -82,6 +83,7 @@ Fleaux::Cursor::moveH(int offset)
     }
     _x += offset;
     _index += offset;
+    _editor->_data->moveGap((int)_index - (int)oldIndex);
 }
 
 /* Just start at the beginning and count forward.
@@ -90,7 +92,7 @@ Fleaux::Cursor::moveH(int offset)
  * optimize these
  */
 void
-Fleaux::Cursor::_getXY(void)
+Fleaux::Cursor::_setXY(void)
 {
     if (_editor->size > 0) {
         GapVector<char>::iterator it = _editor->_data->begin();
@@ -109,21 +111,21 @@ Fleaux::Cursor::_getXY(void)
 }
 
 void
-Fleaux::Cursor::_getIndex(void)
+Fleaux::Cursor::_setIndex(void)
 {
     if (_editor->size > 0) {
-        size_t x = 0;
-        size_t y = 0;
         _index = 0;
         GapVector<char>::iterator it = _editor->_data->begin();
         GapVector<char>::iterator end = _editor->_data->end();
-        while (++y < _y) {
-            while (it != end && *(++it) != '\n') {
+        for (size_t y = 0; y < _y; y++) {
+            for (;it != end && *it != '\n'; it++) {
                 _index++;
             }
+            it++;
+            _index++;
         }
 
-        while (it != end && *(++it) != '\n' && ++x < _x ) {
+        for (size_t x = 0; x < _x && it != end && *(it++) != '\n'; x++) {
             _index++;
         }
     }

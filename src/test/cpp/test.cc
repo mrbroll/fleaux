@@ -69,9 +69,9 @@ namespace {
         /* go through the maze and leave breadcrumbs(.) */
         /* start at beginning of buffer */
         ed0->cursor->insert(sInput.str());
-        ed0->cursor->remove(-1);
-        ed0->cursor->insert(".");
-        ed0->cursor->moveH(-1);
+        ed0->cursor->remove(-2);
+        ed0->cursor->insert(".\n");
+        ed0->cursor->moveV(-1);
         /* up 5 */
         for (int i = 0; i < 5; i++) { 
             ed0->cursor->moveV(-1);
@@ -80,8 +80,8 @@ namespace {
             ed0->cursor->moveH(-1);
         }
         /* right 5 */
-        ed0->cursor->remove(5);
-        ed0->cursor->insert(".....");
+        ed0->cursor->remove(6);
+        ed0->cursor->insert("......");
         ed0->cursor->moveH(-1);
         /* up 2 */
         for (int i = 0; i < 2; i++) {
@@ -172,6 +172,7 @@ namespace {
         /* right 9  */
         ed0->cursor->remove(10);
         ed0->cursor->insert("..........");
+        ed0->cursor->moveH(-1);
         /* up 8     */
         for (int i = 0; i < 8; i++) {
             ed0->cursor->moveV(-1);

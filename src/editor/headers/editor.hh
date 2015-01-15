@@ -74,8 +74,8 @@ namespace Fleaux
             Editor* _editor;
 
             /* member functions */
-            void _getXY(void);
-            void _getIndex(void);
+            void _setXY(void);
+            void _setIndex(void);
     };
 }
 #endif
