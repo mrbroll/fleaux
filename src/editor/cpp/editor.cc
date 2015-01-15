@@ -75,7 +75,7 @@ Fleaux::Cursor::moveH(int offset)
         size_t rIndex = _x;
         GapVector<char>::iterator it = _editor->_data->begin() + _index;
         GapVector<char>::iterator end = _editor->_data->end();
-        while (it != end && *(++it) != '\n') {
+        while (it != end && *(it++) != '\n') {
             rIndex++;
         }
         offset = min(offset, (int)rIndex);
@@ -97,8 +97,8 @@ Fleaux::Cursor::_getXY(void)
         GapVector<char>::iterator end = it + _index;
         _x = 0;
         _y = 0;
-        while (++it != end) {
-            if ((_x || _y) && (*(it - 1) == '\n')) {
+        while (it++ != end) {
+            if (*(it - 1) == '\n') {
                 _x = 0;
                 _y++;
             } else {

@@ -33,12 +33,14 @@ namespace Fleaux
             friend ostream& operator<<(ostream& os, const Editor& ed)
             {
                 os << string(ed._data->begin(), ed._data->end());
+                return os;
             };
             friend istream& operator>>(istream& is, const Editor& ed)
             {
                 string str;
                 is >> str;
                 ed._data->insert(str.begin(), str.end());
+                return is;
             };
             
         protected:
