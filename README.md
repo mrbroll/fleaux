@@ -1,4 +1,4 @@
-#Fleaux
+#LibFleaux
 
 > Note: This project is not ready for public contribution, but feel free to fork
 
