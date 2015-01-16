@@ -17,20 +17,19 @@ Fleaux::Editor::Editor(void)
         exit(1);
     }
 
-    cursor = new Cursor(this);
-    if (cursor == NULL) {
+    _cursor = new Cursor(this);
+    if (_cursor == NULL) {
         cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
         exit(1);
     }
 
     size = 0;
-    numLines = 0;
 }
 
 Fleaux::Editor::~Editor(void)
 {
     delete _data;
-    delete cursor;
+    delete _cursor;
 }
 
 /* Fleaux::Cursor */

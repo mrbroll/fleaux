@@ -22,8 +22,6 @@ namespace Fleaux
         public:
             /* data members */
             size_t size;   
-            size_t numLines;
-            Cursor* cursor;
 
             /* constructor(s) & destructor(s) */
             Editor(void);
@@ -42,9 +40,13 @@ namespace Fleaux
                 ed._data->insert(str.begin(), str.end());
                 return is;
             };
+
+            /* member functions */
+            Cursor* getCursor(void) { return _cursor; };
             
         protected:
             /* data members */
+            Cursor* _cursor;
             GapVector<char>* _data;
     };
 
