@@ -2,15 +2,6 @@ apply plugin: 'c'
 apply plugin: 'cpp'
 
 /* dependencies */
-task depLibuv << {
-    def buildScript = 'deps/libuv/build.sh'
-    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        buildScript = 'deps/libuv/build.ps1'
-    }
-    def proc = new File(buildScript).getAbsolutePath().execute()
-    println "${proc.text}"
-}
-
 task depGtest << {
     def buildScript = 'deps/gtest/build.sh'
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
@@ -19,7 +10,6 @@ task depGtest << {
     def proc = new File(buildScript).getAbsolutePath().execute()
     println "${proc.text}"
 }
-
 /* end dependencies */
 
 model {
@@ -30,12 +20,6 @@ model {
 
     repositories {
         libs (PrebuiltLibraries) {
-            uv {
-                headers.srcDir 'deps/libuv/include'
-                binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file('deps/libuv/lib/libuv.a')
-                }
-            }
             gtest {
                 headers.srcDir 'deps/gtest/include'
                 binaries.withType(StaticLibraryBinary) {
@@ -47,11 +31,9 @@ model {
 }
 
 def gtestBuild = new File('deps/gtest/lib/libgtest.a')
-def libuvBuild = new File('deps/libuv/lib/libuv.a')
 
 binaries.all {
     cppCompiler.args '-std=c++11'
-    lib library: 'uv', linkage: 'static'
     if (buildType == buildTypes.debug) {
         cCompiler.args '-g'
         cppCompiler.args '-g'
@@ -59,22 +41,13 @@ binaries.all {
 }
 
 libraries {
-    editor {
-        binaries.all {
-            lib library: 'uv', linkage: 'static'
-            if (!libuvBuild.exists()) {
-                tasks.withType(CppCompile) {
-                    dependsOn depLibuv
-                }
-            }
-        }
-    }
+    fleaux {}
 }
 
 executables {
     test {
         binaries.all {
-            lib libraries.editor.static
+            lib libraries.fleaux.static
             lib library: 'gtest', linkage: 'static'
             linker.args '-pthread'
             if (!gtestBuild.exists()) {

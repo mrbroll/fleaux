@@ -1,6 +1,5 @@
-#include "../../editor/headers/editor.hh"
+#include "../../fleaux/headers/editor.hh"
 #include "gtest/gtest.h"
-#include <uv.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
