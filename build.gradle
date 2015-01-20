@@ -41,7 +41,13 @@ binaries.all {
 }
 
 libraries {
-    fleaux {}
+    fleaux {
+        binaries.all {
+            if (toolChain in Gcc) {
+                cppCompiler.args '-fPIC'
+            }
+        }
+    }
 }
 
 executables {
