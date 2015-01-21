@@ -73,24 +73,24 @@ namespace {
         curs0->insert(sInput.str());
         curs0->remove(-2);
         curs0->insert(".\n");
-        curs0->moveV(-1);
+        curs0->moveY(-1);
         /* up 5 */
         for (int i = 0; i < 5; i++) { 
-            curs0->moveV(-1);
+            curs0->moveY(-1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* right 5 */
         curs0->remove(6);
         curs0->insert("......");
-        curs0->moveH(-1);
+        curs0->moveX(-1);
         /* up 2 */
         for (int i = 0; i < 2; i++) {
-            curs0->moveV(-1);
+            curs0->moveY(-1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* 4x {     */
             /* left 1   */
@@ -99,151 +99,198 @@ namespace {
         for (int i = 0; i < 4; i++) {
             curs0->remove(-1);
             curs0->insert(".");
-            curs0->moveH(-1);
-            curs0->moveV(-1);
+            curs0->moveX(-1);
+            curs0->moveY(-1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* 4x {     */
             /* right 1  */
             /* up 1     */
         /* }        */
         for (int i = 0; i < 4; i++) {
-            curs0->moveH(1);
+            curs0->moveX(1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
-            curs0->moveV(-1);
+            curs0->moveX(-1);
+            curs0->moveY(-1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* right 5  */
         curs0->remove(6);
         curs0->insert("......");
-        curs0->moveH(-1);
+        curs0->moveX(-1);
         /* down 2   */
         for (int i = 0; i < 2; i++) {
-            curs0->moveV(1);
+            curs0->moveY(1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* right 3  */
         curs0->remove(4);
         curs0->insert("....");
-        curs0->moveH(-1);
+        curs0->moveX(-1);
         /* up-right 3 */
         for (int i = 0; i < 3; i++) {
-            curs0->moveV(-1);
-            curs0->moveH(1);
+            curs0->moveY(-1);
+            curs0->moveX(1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* up 10    */
         for (int i = 0; i < 10; i++) {
-            curs0->moveV(-1);
+            curs0->moveY(-1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* left 4   */
         curs0->remove(-4);
         curs0->insert("....");
-        curs0->moveH(-4);
+        curs0->moveX(-4);
         /* down 8   */
         for (int i = 0; i < 8; i++) {
-            curs0->moveV(1);
+            curs0->moveY(1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* left 12  */
         curs0->remove(-12);
         curs0->insert("............");
-        curs0->moveH(-12);
+        curs0->moveX(-12);
         /* up 2     */
         for (int i = 0; i < 2; i++) {
-            curs0->moveV(-1);
+            curs0->moveY(-1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* right 9  */
         curs0->remove(10);
         curs0->insert("..........");
-        curs0->moveH(-1);
+        curs0->moveX(-1);
         /* up 8     */
         for (int i = 0; i < 8; i++) {
-            curs0->moveV(-1);
+            curs0->moveY(-1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* left 3   */
         curs0->remove(-3);
         curs0->insert("...");
-        curs0->moveH(-3);
+        curs0->moveX(-3);
         /* 2x {     */
             /* down 1   */
             /* left 1   */
         /* }        */
         for (int i = 0; i < 2; i++) {
-            curs0->moveV(1);
+            curs0->moveY(1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
             curs0->remove(-1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* down 2   */
         for (int i = 0; i < 2; i++) {
-            curs0->moveV(1);
+            curs0->moveY(1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
         /* left 4   */
         curs0->remove(-4);
         curs0->insert("....");
-        curs0->moveH(-4);
+        curs0->moveX(-4);
         /* up 4     */
         for (int i = 0; i < 4; i++) {
-            curs0->moveV(-1);
+            curs0->moveY(-1);
             curs0->remove(1);
             curs0->insert(".");
-            curs0->moveH(-1);
+            curs0->moveX(-1);
         }
 
-        stringstream actual;
-        actual << *ed0;
-        ASSERT_STREQ(sResult.str().c_str(), actual.str().c_str());
-
         /* reverse adding stars(*) at turns and endpoints */
+        Cursor curs1(ed0);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* down 4   */
+        curs1.moveY(4);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* right 4  */
+        curs1.moveX(4);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* up 2     */
-        /* right 1  */
-        /* up 1     */
+        curs1.moveY(-2);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* 2x {     */
             /* right 1 */
             /* up 1    */
         /* }        */
+        curs1.moveX(2);
+        curs1.moveY(-2);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* right 3 */
+        curs1.moveX(3);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* down 8 */
+        curs1.moveY(8);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* left 9 */
+        curs1.moveX(-9);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* down 2 */
+        curs1.moveY(2);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* right 12 */
+        curs1.moveX(12);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* up 8 */
+        curs1.moveY(-8);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* right 4 */
+        curs1.moveX(4);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* down 10 */
+        curs1.moveY(10);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* down-left 3 */
+        curs1.moveX(-3);
+        curs1.moveY(3);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* left 3 */
+        curs1.moveX(-3);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* up 2 */
+        curs1.moveY(-2);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* left 5 */
+        curs1.moveX(-5);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* 4x {     */
             /* down 1   */
             /* left 1   */
@@ -252,9 +299,24 @@ namespace {
             /* down 1   */
             /* right 1   */
         /* }        */
+        curs1.moveY(8);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* down 2   */
+        curs1.moveY(2);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* left 5   */
+        curs1.moveX(-5);
+        curs1.replace(1, "*");
+        curs1.moveX(-1);
         /* down 5   */
+        curs1.moveY(5);
+        curs1.replace(1, "*");
+
+        stringstream actual;
+        actual << *ed0;
+        ASSERT_STREQ(sResult.str().c_str(), actual.str().c_str());
     }
 }
 

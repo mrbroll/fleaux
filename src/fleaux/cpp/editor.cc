@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <stdlib.h>
 #include <string.h>
 #include "../headers/editor.hh"
@@ -17,7 +18,7 @@ Fleaux::Editor::Editor(void)
         exit(1);
     }
 
-    _cursor = new Cursor(this);
+    _cursor = new Cursor(this, true);
     if (_cursor == NULL) {
         cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
         exit(1);
@@ -33,6 +34,18 @@ Fleaux::Editor::~Editor(void)
 }
 
 /* Fleaux::Cursor */
+Fleaux::Cursor::Cursor(Editor* ed, bool callerIsEditor) : _editor(ed)
+{
+    if (callerIsEditor) {
+        _index = 0;
+        _x = 0;
+        _y = 0;
+    } else {
+        _index = ed->_cursor->_index;
+        _x = ed->_cursor->_x;
+        _y = ed->_cursor->_y;
+    }
+}
 void
 Fleaux::Cursor::insert(const string& input)
 {
@@ -54,7 +67,14 @@ Fleaux::Cursor::remove(int length)
 }
 
 void
-Fleaux::Cursor::moveV(int offset)
+Fleaux::Cursor::replace(int length, const string& replacement)
+{
+    remove(length);
+    insert(replacement);
+}
+
+void
+Fleaux::Cursor::moveY(int offset)
 {
     size_t oldIndex = _index;
     if (offset < 0) {
@@ -66,7 +86,7 @@ Fleaux::Cursor::moveV(int offset)
 }
 
 void
-Fleaux::Cursor::moveH(int offset)
+Fleaux::Cursor::moveX(int offset)
 {
     size_t oldIndex = _index;
     if (offset < 0) {
