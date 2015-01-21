@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdlib.h>
 #include <string.h>
 #include "../headers/editor.hh"
@@ -10,7 +12,22 @@ using namespace std;
 using namespace SDNB;
 
 /* Fleaux::Editor */
-Fleaux::Editor::Editor(void)
+Fleaux::Editor::Editor(void) : size(0)
+{
+    _data = new GapVector<char>();
+    if (_data == NULL) {
+        cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
+        exit(1);
+    }
+
+    _cursor = new Cursor(this, true);
+    if (_cursor == NULL) {
+        cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
+        exit(1);
+    }
+}
+
+Fleaux::Editor::Editor(const string& path)
 {
     _data = new GapVector<char>();
     if (_data == NULL) {
@@ -24,7 +41,13 @@ Fleaux::Editor::Editor(void)
         exit(1);
     }
 
-    size = 0;
+    ifstream inputFile(path.c_str());
+    stringstream fileContents;
+    fileContents << inputFile.rdbuf();
+    _cursor->insert(fileContents.str());
+    inputFile.close();
+
+    size = fileContents.str().size();
 }
 
 Fleaux::Editor::~Editor(void)

@@ -16,7 +16,7 @@ namespace {
             FleauxEditorTest()
             {
                 ed0 = new Editor();
-                ed1 = new Editor();
+                ed1 = new Editor("test/editor/move_test_input.txt");
             }
 
             ~FleauxEditorTest()
@@ -64,13 +64,13 @@ namespace {
         ifstream result_file("test/editor/move_test_result.txt");
         stringstream sResult;
         sResult << result_file.rdbuf();
-        ifstream input_file("test/editor/move_test_input.txt");
-        stringstream sInput;
-        sInput << input_file.rdbuf();
+        //ifstream input_file("test/editor/move_test_input.txt");
+        //stringstream sInput;
+        //sInput << input_file.rdbuf();
         /* go through the maze and leave breadcrumbs(.) */
         /* start at beginning of buffer */
-        Cursor* curs0 = ed0->getCursor();
-        curs0->insert(sInput.str());
+        Cursor* curs0 = ed1->getCursor();
+        //curs0->insert(sInput.str());
         curs0->remove(-2);
         curs0->insert(".\n");
         curs0->moveY(-1);
@@ -219,7 +219,7 @@ namespace {
         }
 
         /* reverse adding stars(*) at turns and endpoints */
-        Cursor curs1(ed0);
+        Cursor curs1(ed1);
         curs1.replace(1, "*");
         curs1.moveX(-1);
         /* down 4   */
@@ -315,7 +315,7 @@ namespace {
         curs1.replace(1, "*");
 
         stringstream actual;
-        actual << *ed0;
+        actual << *ed1;
         ASSERT_STREQ(sResult.str().c_str(), actual.str().c_str());
     }
 }

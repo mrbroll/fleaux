@@ -25,6 +25,7 @@ namespace Fleaux
 
             /* constructor(s) & destructor(s) */
             Editor(void);
+            Editor(const string& path);
             ~Editor(void);
 
             /* operator overloads */
