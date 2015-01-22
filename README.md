@@ -6,21 +6,19 @@ __LibFleaux__ is a c++ library that contains the core data structures used by th
 
 ###Build Instructions
 
-```
-git clone https://github.com/mrbroll/libfleaux.git <dir>
-cd <dir>
-./gradlew releaseFleauxStaticLibrary
-```
+    git clone https://github.com/mrbroll/libfleaux.git <dir>
+    cd <dir>
+    ./gradlew releaseFleauxStaticLibrary
 
 To build and run tests:
 
-```
-./gradlew releaseTestExecutable
-./gradlew test
-```
+    ./gradlew releaseTestExecutable
+    ./gradlew test
 
-So far, I have only built this on OSX 10.10 and Linux Ubuntu 14.04, but it should theoretically build on Windows too, as long as you have the MSVC compiler installed and in your path.
+###Documentation
+See the docs [here](https://mrbroll.github.io/libfleaux)
 
-There isn't any platform-specific code in here, but it does require that your compiler have c++11 support.
+__Notes:__
+This has only been built on OSX 10.10 and Linux Ubuntu 14.04. Getting this to compile on Windows is really just a matter of setting up the dep install scripts, but I don't have access to a Windows machine right now to do this.
 
-So far the only component implemented is the editor, and it only supports very basic CRUD operations (insert/remove text and moving the cursor). More features will be added in the future.
+I don't believe there is any c++11 specific code in here yet, but it's very possible that c++11 support will be required as more functionality is added, thus the standard flag in the build script.
