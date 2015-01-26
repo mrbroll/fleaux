@@ -24,9 +24,10 @@ namespace Fleaux
             virtual void insert(const string& input) = 0;
             virtual void remove(int length) = 0;
             virtual void replace(int length, const string& replacement) = 0;
-            virtual size_t getIndex(void) = 0;
-            virtual size_t getX(void) = 0;
-            virtual size_t getY(void) = 0;
+            virtual IEditor* getEditor() const = 0;
+            virtual size_t getIndex(void) const = 0;
+            virtual size_t getX(void) const = 0;
+            virtual size_t getY(void) const = 0;
             virtual void move(int offsetX, int offsetY) = 0;
     };
 }

@@ -24,8 +24,8 @@ Fleaux::Editor::Editor(void) : size(0)
         cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
         exit(1);
     }
-
-    _cursor = new Cursor(this, true);
+    _cursor = NULL;
+    _cursor = new Cursor(this);
     if (_cursor == NULL) {
         cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
         exit(1);
@@ -44,7 +44,8 @@ Fleaux::Editor::Editor(const string& path)
         cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
         exit(1);
     }
-    _cursor = new Cursor(this, true);
+    _cursor = NULL;
+    _cursor = new Cursor(this);
     if (_cursor == NULL) {
         cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
         exit(1);
@@ -131,17 +132,29 @@ Fleaux::Editor::writeToFile(const string& path)
  * call is being made outside of an editor's constructor, then the new cursor is
  * merely a copy of ed's
  */
-Fleaux::Cursor::Cursor(Editor* ed, bool callerIsEditor) : _editor(ed)
+Fleaux::Cursor::Cursor(Editor* ed) : _editor(ed)
 {
-    if (callerIsEditor) {
+    if (ed->_cursor == NULL) {
         _index = 0;
         _x = 0;
         _y = 0;
+        ed->_cursor = this;
     } else {
-        _index = ed->_cursor->_index;
-        _x = ed->_cursor->_x;
-        _y = ed->_cursor->_y;
+        _index = ed->_cursor->getIndex();
+        _x = ed->_cursor->getX();
+        _y = ed->_cursor->getY();
     }
+}
+
+/**
+ * Copy constructor - Simple shallow copy.
+ */
+Fleaux::Cursor::Cursor(const Fleaux::ICursor& curs)
+{ 
+    _editor = (Fleaux::Editor*)curs.getEditor();
+    _index = curs.getIndex();
+    _x = curs.getX();
+    _y = curs.getY(); 
 }
 
 /**

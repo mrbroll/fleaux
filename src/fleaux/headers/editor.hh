@@ -51,15 +51,17 @@ namespace Fleaux
     {
         public:
             /* constructor(s) & destructor(s) */
-            Cursor(Editor* ed, bool callerIsEditor = false);
+            Cursor(Editor* ed);
+            Cursor(const ICursor& curs);
             
             /* member functions */
             void insert(const string& input);
             void remove(int length);
             void replace(int length, const string& replacement);
-            size_t getIndex(void) { return _index; };
-            size_t getX(void) { return _x; };
-            size_t getY(void) { return _y; };
+            IEditor* getEditor(void) const { return (IEditor*)_editor; };
+            size_t getIndex(void) const { return _index; };
+            size_t getX(void) const { return _x; };
+            size_t getY(void) const { return _y; };
             void move(int offsetX, int offsetY);
 
         protected:

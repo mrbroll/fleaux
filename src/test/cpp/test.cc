@@ -216,7 +216,7 @@ namespace {
         }
 
         /* reverse adding stars(*) at turns and endpoints */
-        Cursor curs1(ed1);
+        Cursor curs1(*curs0);
         curs1.replace(1, "*");
         curs1.move(-1, 0);
         /* down 4   */
