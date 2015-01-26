@@ -9,7 +9,9 @@ Inheritance diagram for Fleaux\+:\+:Cursor\+:\begin{figure}[H]
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classFleaux_1_1Cursor_a4dcda4244b32b97d7251a64719a348b7}{Cursor} (\hyperlink{classFleaux_1_1Editor}{Editor} $\ast$ed, bool caller\+Is\+Editor=false)
+\hyperlink{classFleaux_1_1Cursor_aa2811c8ebadd1b019a1d1099eb401e3b}{Cursor} (\hyperlink{classFleaux_1_1Editor}{Editor} $\ast$ed)
+\item 
+\hyperlink{classFleaux_1_1Cursor_a643ea893489f5a963473dc79afd65bd2}{Cursor} (const \hyperlink{classFleaux_1_1ICursor}{I\+Cursor} \&curs)
 \item 
 void \hyperlink{classFleaux_1_1Cursor_a99c820ad3d952b5e38a41a11c18e7c2f}{insert} (const string \&input)
 \item 
@@ -17,13 +19,16 @@ void \hyperlink{classFleaux_1_1Cursor_a0fca52d6d4e589f8eef50a351e8340ff}{remove}
 \item 
 void \hyperlink{classFleaux_1_1Cursor_a439606f718dd885f4f96ca3244c3172a}{replace} (int length, const string \&replacement)
 \item 
-\hypertarget{classFleaux_1_1Cursor_ab74cdfed4d67434dab2b754de3ac875b}{}size\+\_\+t {\bfseries get\+Index} (void)\label{classFleaux_1_1Cursor_ab74cdfed4d67434dab2b754de3ac875b}
+\hypertarget{classFleaux_1_1Cursor_a9cdba74fcd1c812bdfd97b671fbef659}{}\hyperlink{classFleaux_1_1IEditor}{I\+Editor} $\ast$ {\bfseries get\+Editor} (void) const \label{classFleaux_1_1Cursor_a9cdba74fcd1c812bdfd97b671fbef659}
 
 \item 
-\hypertarget{classFleaux_1_1Cursor_a22527c0a0b5a1a2ca55b9cdbde15d2a1}{}size\+\_\+t {\bfseries get\+X} (void)\label{classFleaux_1_1Cursor_a22527c0a0b5a1a2ca55b9cdbde15d2a1}
+\hypertarget{classFleaux_1_1Cursor_a7358d0be48db3117802279959c125eb8}{}size\+\_\+t {\bfseries get\+Index} (void) const \label{classFleaux_1_1Cursor_a7358d0be48db3117802279959c125eb8}
 
 \item 
-\hypertarget{classFleaux_1_1Cursor_a676f4b83754926e416883564ffdfd4ca}{}size\+\_\+t {\bfseries get\+Y} (void)\label{classFleaux_1_1Cursor_a676f4b83754926e416883564ffdfd4ca}
+\hypertarget{classFleaux_1_1Cursor_a3dc9befeb121b6a536da063560f81af0}{}size\+\_\+t {\bfseries get\+X} (void) const \label{classFleaux_1_1Cursor_a3dc9befeb121b6a536da063560f81af0}
+
+\item 
+\hypertarget{classFleaux_1_1Cursor_ab265ba6839087cbe810c27fe59e9f593}{}size\+\_\+t {\bfseries get\+Y} (void) const \label{classFleaux_1_1Cursor_ab265ba6839087cbe810c27fe59e9f593}
 
 \item 
 void \hyperlink{classFleaux_1_1Cursor_a91e3ff97154764836099fdb13002c877}{move} (int offset\+X, int offset\+Y)
@@ -53,15 +58,21 @@ void \hyperlink{classFleaux_1_1Cursor_a964ad98494b190af5fca13c8cbe69371}{\+\_\+s
 
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{classFleaux_1_1Cursor_a4dcda4244b32b97d7251a64719a348b7}{}\index{Fleaux\+::\+Cursor@{Fleaux\+::\+Cursor}!Cursor@{Cursor}}
+\hypertarget{classFleaux_1_1Cursor_aa2811c8ebadd1b019a1d1099eb401e3b}{}\index{Fleaux\+::\+Cursor@{Fleaux\+::\+Cursor}!Cursor@{Cursor}}
 \index{Cursor@{Cursor}!Fleaux\+::\+Cursor@{Fleaux\+::\+Cursor}}
 \subsubsection[{Cursor}]{\setlength{\rightskip}{0pt plus 5cm}Fleaux\+::\+Cursor\+::\+Cursor (
 \begin{DoxyParamCaption}
-\item[{{\bf Editor} $\ast$}]{ed, }
-\item[{bool}]{caller\+Is\+Editor = {\ttfamily false}}
+\item[{{\bf Editor} $\ast$}]{ed}
 \end{DoxyParamCaption}
-)}\label{classFleaux_1_1Cursor_a4dcda4244b32b97d7251a64719a348b7}
-Constructor creates a new \hyperlink{classFleaux_1_1Cursor}{Cursor} instance that belongs to the editor pointed to by ed. The optional caller\+Is\+Editor parameter is used to determine if this is being called from an \hyperlink{classFleaux_1_1Editor}{Editor}\textquotesingle{}s constructor, or by another entity. If the call is being made outside of an editor\textquotesingle{}s constructor, then the new cursor is merely a copy of ed\textquotesingle{}s 
+)}\label{classFleaux_1_1Cursor_aa2811c8ebadd1b019a1d1099eb401e3b}
+Constructor creates a new \hyperlink{classFleaux_1_1Cursor}{Cursor} instance that belongs to the editor pointed to by ed. The optional caller\+Is\+Editor parameter is used to determine if this is being called from an \hyperlink{classFleaux_1_1Editor}{Editor}\textquotesingle{}s constructor, or by another entity. If the call is being made outside of an editor\textquotesingle{}s constructor, then the new cursor is merely a copy of ed\textquotesingle{}s \hypertarget{classFleaux_1_1Cursor_a643ea893489f5a963473dc79afd65bd2}{}\index{Fleaux\+::\+Cursor@{Fleaux\+::\+Cursor}!Cursor@{Cursor}}
+\index{Cursor@{Cursor}!Fleaux\+::\+Cursor@{Fleaux\+::\+Cursor}}
+\subsubsection[{Cursor}]{\setlength{\rightskip}{0pt plus 5cm}Fleaux\+::\+Cursor\+::\+Cursor (
+\begin{DoxyParamCaption}
+\item[{const {\bf I\+Cursor} \&}]{curs}
+\end{DoxyParamCaption}
+)}\label{classFleaux_1_1Cursor_a643ea893489f5a963473dc79afd65bd2}
+Copy constructor -\/ Simple shallow copy. 
 
 \subsection{Member Function Documentation}
 \hypertarget{classFleaux_1_1Cursor_a964ad98494b190af5fca13c8cbe69371}{}\index{Fleaux\+::\+Cursor@{Fleaux\+::\+Cursor}!\+\_\+set\+Index@{\+\_\+set\+Index}}
