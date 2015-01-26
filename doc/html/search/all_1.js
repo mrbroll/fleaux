@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['editor',['Editor',['../classFleaux_1_1Editor.html',1,'Fleaux']]]
+  ['cursor',['Cursor',['../classFleaux_1_1Cursor.html',1,'Fleaux']]],
+  ['cursor',['Cursor',['../classFleaux_1_1Cursor.html#a4dcda4244b32b97d7251a64719a348b7',1,'Fleaux::Cursor']]]
 ];

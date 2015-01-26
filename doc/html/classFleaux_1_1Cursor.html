@@ -64,6 +64,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
       <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -95,20 +97,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">Fleaux::Cursor Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="dynheader">
+Inheritance diagram for Fleaux::Cursor:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classFleaux_1_1Cursor.png" usemap="#Fleaux::Cursor_map" alt=""/>
+  <map id="Fleaux::Cursor_map" name="Fleaux::Cursor_map">
+<area href="classFleaux_1_1ICursor.html" alt="Fleaux::ICursor" shape="rect" coords="0,0,98,24"/>
+</map>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4dcda4244b32b97d7251a64719a348b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4dcda4244b32b97d7251a64719a348b7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Cursor</b> (<a class="el" href="classFleaux_1_1Editor.html">Editor</a> *ed, bool callerIsEditor=false)</td></tr>
+<tr class="memitem:a4dcda4244b32b97d7251a64719a348b7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFleaux_1_1Cursor.html#a4dcda4244b32b97d7251a64719a348b7">Cursor</a> (<a class="el" href="classFleaux_1_1Editor.html">Editor</a> *ed, bool callerIsEditor=false)</td></tr>
 <tr class="separator:a4dcda4244b32b97d7251a64719a348b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99c820ad3d952b5e38a41a11c18e7c2f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a99c820ad3d952b5e38a41a11c18e7c2f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>insert</b> (const string &amp;input)</td></tr>
+<tr class="memitem:a99c820ad3d952b5e38a41a11c18e7c2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFleaux_1_1Cursor.html#a99c820ad3d952b5e38a41a11c18e7c2f">insert</a> (const string &amp;input)</td></tr>
 <tr class="separator:a99c820ad3d952b5e38a41a11c18e7c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fca52d6d4e589f8eef50a351e8340ff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0fca52d6d4e589f8eef50a351e8340ff"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (int length)</td></tr>
+<tr class="memitem:a0fca52d6d4e589f8eef50a351e8340ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFleaux_1_1Cursor.html#a0fca52d6d4e589f8eef50a351e8340ff">remove</a> (int length)</td></tr>
 <tr class="separator:a0fca52d6d4e589f8eef50a351e8340ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a439606f718dd885f4f96ca3244c3172a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a439606f718dd885f4f96ca3244c3172a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>replace</b> (int length, const string &amp;replacement)</td></tr>
+<tr class="memitem:a439606f718dd885f4f96ca3244c3172a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFleaux_1_1Cursor.html#a439606f718dd885f4f96ca3244c3172a">replace</a> (int length, const string &amp;replacement)</td></tr>
 <tr class="separator:a439606f718dd885f4f96ca3244c3172a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab74cdfed4d67434dab2b754de3ac875b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab74cdfed4d67434dab2b754de3ac875b"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getIndex</b> (void)</td></tr>
@@ -119,20 +126,14 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getX</b> (void)</td
 <tr class="memitem:a676f4b83754926e416883564ffdfd4ca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a676f4b83754926e416883564ffdfd4ca"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getY</b> (void)</td></tr>
 <tr class="separator:a676f4b83754926e416883564ffdfd4ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf0fdc3d40006ee0c34a5b04e892725d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf0fdc3d40006ee0c34a5b04e892725d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>moveX</b> (int offset)</td></tr>
-<tr class="separator:adf0fdc3d40006ee0c34a5b04e892725d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee726a762eb58a76586a8e8cf528dc73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee726a762eb58a76586a8e8cf528dc73"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>moveY</b> (int offset)</td></tr>
-<tr class="separator:aee726a762eb58a76586a8e8cf528dc73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91e3ff97154764836099fdb13002c877"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFleaux_1_1Cursor.html#a91e3ff97154764836099fdb13002c877">move</a> (int offsetX, int offsetY)</td></tr>
+<tr class="separator:a91e3ff97154764836099fdb13002c877"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a3a45b2bde24c3173e84b8097c789265b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a45b2bde24c3173e84b8097c789265b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>_setXY</b> (void)</td></tr>
+<tr class="memitem:a3a45b2bde24c3173e84b8097c789265b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFleaux_1_1Cursor.html#a3a45b2bde24c3173e84b8097c789265b">_setXY</a> (void)</td></tr>
 <tr class="separator:a3a45b2bde24c3173e84b8097c789265b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a964ad98494b190af5fca13c8cbe69371"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a964ad98494b190af5fca13c8cbe69371"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>_setIndex</b> (void)</td></tr>
+<tr class="memitem:a964ad98494b190af5fca13c8cbe69371"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFleaux_1_1Cursor.html#a964ad98494b190af5fca13c8cbe69371">_setIndex</a> (void)</td></tr>
 <tr class="separator:a964ad98494b190af5fca13c8cbe69371"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
@@ -150,6 +151,213 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>_y</b></td></tr>
 <a class="el" href="classFleaux_1_1Editor.html">Editor</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>_editor</b></td></tr>
 <tr class="separator:ae65c902eba05392c7db5cb8956af441d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a4dcda4244b32b97d7251a64719a348b7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Fleaux::Cursor::Cursor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFleaux_1_1Editor.html">Editor</a> *&#160;</td>
+          <td class="paramname"><em>ed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>callerIsEditor</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Constructor creates a new <a class="el" href="classFleaux_1_1Cursor.html">Cursor</a> instance that belongs to the editor pointed to by ed. The optional callerIsEditor parameter is used to determine if this is being called from an <a class="el" href="classFleaux_1_1Editor.html">Editor</a>'s constructor, or by another entity. If the call is being made outside of an editor's constructor, then the new cursor is merely a copy of ed's </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a964ad98494b190af5fca13c8cbe69371"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Fleaux::Cursor::_setIndex </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates the cursor's new index after updating it's x and/or y value(s). </p>
+
+</div>
+</div>
+<a class="anchor" id="a3a45b2bde24c3173e84b8097c789265b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Fleaux::Cursor::_setXY </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates the cursor's new x and/or y value(s) after updating its index. </p>
+
+</div>
+</div>
+<a class="anchor" id="a99c820ad3d952b5e38a41a11c18e7c2f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Fleaux::Cursor::insert </td>
+          <td>(</td>
+          <td class="paramtype">const string &amp;&#160;</td>
+          <td class="paramname"><em>input</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Inserts the input string at the cursor's current position in the editor's buffer. </p>
+
+<p>Implements <a class="el" href="classFleaux_1_1ICursor.html">Fleaux::ICursor</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a91e3ff97154764836099fdb13002c877"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Fleaux::Cursor::move </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>offsetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>offsetY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Moves the cursor relative to its current x,y position. For example: calling move(-4, 27) will move the cursor left 4 characters and down 27 characters </p>
+
+<p>Implements <a class="el" href="classFleaux_1_1ICursor.html">Fleaux::ICursor</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0fca52d6d4e589f8eef50a351e8340ff"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Fleaux::Cursor::remove </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>length</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Removes n characters, where n is |length|. The sign of length determines the direction from the cursor in which characters are removed: (-) removes backward starting at the character behind the cursor, (+) removes forward starting at the character under the cursor. </p>
+
+<p>Implements <a class="el" href="classFleaux_1_1ICursor.html">Fleaux::ICursor</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a439606f718dd885f4f96ca3244c3172a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Fleaux::Cursor::replace </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const string &amp;&#160;</td>
+          <td class="paramname"><em>replacement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Replaces n characters in where n is |length| with the replacement string. This is the same as Fleaux::Cursor::remove(length) followed by Fleaux::Cursor::insert(replacement). </p>
+
+<p>Implements <a class="el" href="classFleaux_1_1ICursor.html">Fleaux::ICursor</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/fleaux/headers/<a class="el" href="editor_8hh_source.html">editor.hh</a></li>
 <li>src/fleaux/cpp/editor.cc</li>
@@ -157,7 +365,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>_y</b></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 21 2015 23:27:52 for LibFleaux by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Jan 25 2015 19:18:40 for LibFleaux by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

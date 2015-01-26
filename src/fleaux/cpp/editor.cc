@@ -6,12 +6,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../headers/editor.hh"
+#include "../headers/ieditor.hh"
 #include "../../../deps/libsdnb/include/sdnb/gap_vector.hh"
 
 using namespace std;
 using namespace SDNB;
 
 /* Fleaux::Editor */
+
+/**
+ * Default constructor
+ */
 Fleaux::Editor::Editor(void) : size(0)
 {
     _data = new GapVector<char>();
@@ -27,6 +32,11 @@ Fleaux::Editor::Editor(void) : size(0)
     }
 }
 
+/**
+ * This constructor overload acts the same as the default constructor, except
+ * it also fills the editor's buffer with the contents of the file at 'path'.
+ * This is the same as calling the default constructor followed by readFromFile(path).
+ */
 Fleaux::Editor::Editor(const string& path)
 {
     _data = new GapVector<char>();
@@ -34,29 +44,93 @@ Fleaux::Editor::Editor(const string& path)
         cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
         exit(1);
     }
-
     _cursor = new Cursor(this, true);
     if (_cursor == NULL) {
         cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
         exit(1);
     }
-
-    ifstream inputFile(path.c_str());
-    stringstream fileContents;
-    fileContents << inputFile.rdbuf();
-    _cursor->insert(fileContents.str());
-    inputFile.close();
-
-    size = fileContents.str().size();
+    readFromFile(path);
 }
 
+/**
+ * Deallocates the editor's internal data and cursor members
+ */
 Fleaux::Editor::~Editor(void)
 {
     delete _data;
     delete _cursor;
+    size = 0;
+}
+
+/**
+ * Sends the Editor's buffer content to the outputstream os
+ */
+ostream&
+Fleaux::operator<<(ostream& os, const Fleaux::Editor& ed)
+{
+    string* editorContent = new string(ed._data->begin(), ed._data->end());
+    os << *editorContent;
+    delete editorContent;
+    return os;
+}
+
+/**
+ * Reads content from the input stream is and inserts it at the current cursor
+ * position.
+ */
+istream&
+Fleaux::operator>>(istream& is, Fleaux::Editor& ed)
+{
+    istreambuf_iterator<char> begin(is);
+    istreambuf_iterator<char> end;
+    string* input = new string(begin, end);
+    ed._cursor->insert(*input);
+    delete input;
+    return is;
+}
+
+/**
+ * Replaces the contents of the editor's buffer with the contents of the file
+ * at 'path'
+ */
+void
+Fleaux::Editor::readFromFile(const string& path)
+{
+    if (_data != NULL) {
+        delete _data;
+        size = 0;
+        _data = NULL;
+    }
+    _data = new GapVector<char>();
+    if (_data == NULL) {
+        cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
+        exit(1);
+    }
+    ifstream inputFile(path.c_str());
+    inputFile >> *this;
+    inputFile.close();
+}
+
+/**
+ * Writes the editor's buffer contents to the file at 'path'
+ */
+void
+Fleaux::Editor::writeToFile(const string& path)
+{
+    ofstream outputFile(path.c_str());
+    outputFile << *this;
+    outputFile.close();
 }
 
 /* Fleaux::Cursor */
+
+/**
+ * Constructor creates a new Cursor instance that belongs to the editor pointed
+ * to by ed. The optional callerIsEditor parameter is used to determine if this
+ * is being called from an Editor's constructor, or by another entity. If the
+ * call is being made outside of an editor's constructor, then the new cursor is
+ * merely a copy of ed's
+ */
 Fleaux::Cursor::Cursor(Editor* ed, bool callerIsEditor) : _editor(ed)
 {
     if (callerIsEditor) {
@@ -69,6 +143,11 @@ Fleaux::Cursor::Cursor(Editor* ed, bool callerIsEditor) : _editor(ed)
         _y = ed->_cursor->_y;
     }
 }
+
+/**
+ * Inserts the input string at the cursor's current position in the editor's
+ * buffer.
+ */
 void
 Fleaux::Cursor::insert(const string& input)
 {
@@ -78,6 +157,12 @@ Fleaux::Cursor::insert(const string& input)
     _setXY();
 }
 
+/**
+ * Removes n characters, where n is |length|. The sign of
+ * length determines the direction from the cursor in which characters are
+ * removed: (-) removes backward starting at the character behind the cursor, 
+ * (+) removes forward starting at the character under the cursor.
+ */
 void
 Fleaux::Cursor::remove(int length)
 {
@@ -89,6 +174,11 @@ Fleaux::Cursor::remove(int length)
     _editor->size -= abs(length);
 }
 
+/**
+ * Replaces n characters in where n is |length| with the replacement string.
+ * This is the same as Fleaux::Cursor::remove(length) followed by
+ * Fleaux::Cursor::insert(replacement).
+ */
 void
 Fleaux::Cursor::replace(int length, const string& replacement)
 {
@@ -96,20 +186,29 @@ Fleaux::Cursor::replace(int length, const string& replacement)
     insert(replacement);
 }
 
+/**
+ * Moves the cursor relative to its current x,y position.
+ * For example: calling move(-4, 27) will move the cursor left 4 characters
+ * and down 27 characters
+ */
 void
-Fleaux::Cursor::moveY(int offset)
+Fleaux::Cursor::move(int offsetX, int offsetY)
 {
-    size_t oldIndex = _index;
-    if (offset < 0) {
-        offset = max(offset, -(int)_y);
+    if (offsetY != 0) {
+        __moveY(offsetY);
     }
-    _y += offset;
-    _setIndex();
-    _editor->_data->moveGap((int)_index - (int)oldIndex);
+
+    if (offsetX != 0) {
+        __moveX(offsetX);
+    }
 }
 
+/**
+ * Moves the Cursor horizontally by n characters, where n = |length|.
+ * The direction is determined by the sign of offset: (-) moves left, (+) moves right.
+ */
 void
-Fleaux::Cursor::moveX(int offset)
+Fleaux::Cursor::__moveX(int offset)
 {
     size_t oldIndex = _index;
     if (offset < 0) {
@@ -128,10 +227,24 @@ Fleaux::Cursor::moveX(int offset)
     _editor->_data->moveGap((int)_index - (int)oldIndex);
 }
 
-/* Just start at the beginning and count forward.
- * This is a brute force approach, but I just want to 
- * get this working. Once I do, I can come back and
- * optimize these
+/**
+ * Moves the Cursor vertically by n characters, where n = |length|.
+ * The direction is determined by the sign of offset: (-) moves up, (+) moves down.
+ */
+void
+Fleaux::Cursor::__moveY(int offset)
+{
+    size_t oldIndex = _index;
+    if (offset < 0) {
+        offset = max(offset, -(int)_y);
+    }
+    _y += offset;
+    _setIndex();
+    _editor->_data->moveGap((int)_index - (int)oldIndex);
+}
+
+/**
+ * Calculates the cursor's new x and/or y value(s) after updating its index.
  */
 void
 Fleaux::Cursor::_setXY(void)
@@ -152,6 +265,9 @@ Fleaux::Cursor::_setXY(void)
     }
 }
 
+/**
+ * Calculates the cursor's new index after updating it's x and/or y value(s).
+ */
 void
 Fleaux::Cursor::_setIndex(void)
 {

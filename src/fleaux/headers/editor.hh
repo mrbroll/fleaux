@@ -1,21 +1,27 @@
+#ifndef FLEAUX_EDITOR_HH_
+#define FLEAUX_EDITOR_HH_
+
 #include <cstdlib>
+#include "ieditor.hh"
 #include <iostream>
 #include <memory>
 #include <sstream>
 #include <string>
 #include "../../../deps/libsdnb/include/sdnb/gap_vector.hh"
 
-#ifndef FLEAUX_EDITOR_H_
-#define FLEAUX_EDITOR_H_
-
 using namespace std;
 using namespace SDNB;
 
 namespace Fleaux
 {
+    class Editor;
+
+    ostream& operator<<(ostream& os, const Editor& ed);
+    istream& operator>>(istream& is, Editor& ed);
+
     class Cursor;
 
-    class Editor
+    class Editor : public IEditor
     {
         friend class Cursor;
 
@@ -28,22 +34,12 @@ namespace Fleaux
             Editor(const string& path);
             ~Editor(void);
 
-            /* operator overloads */
-            friend ostream& operator<<(ostream& os, const Editor& ed)
-            {
-                os << string(ed._data->begin(), ed._data->end());
-                return os;
-            };
-            friend istream& operator>>(istream& is, const Editor& ed)
-            {
-                string str;
-                is >> str;
-                ed._data->insert(str.begin(), str.end());
-                return is;
-            };
-
             /* member functions */
-            Cursor* getCursor(void) { return _cursor; };
+            friend ostream& operator<<(ostream& os, const Editor& ed);
+            friend istream& operator>>(istream& is, Editor& ed);
+            void readFromFile(const string& path);
+            void writeToFile(const string& path);
+            ICursor* getCursor(void) { return (ICursor*)_cursor; };
             
         protected:
             /* data members */
@@ -51,7 +47,7 @@ namespace Fleaux
             GapVector<char>* _data;
     };
 
-    class Cursor
+    class Cursor : public ICursor
     {
         public:
             /* constructor(s) & destructor(s) */
@@ -61,11 +57,10 @@ namespace Fleaux
             void insert(const string& input);
             void remove(int length);
             void replace(int length, const string& replacement);
-            inline size_t getIndex(void) { return _index; };
-            inline size_t getX(void) { return _x; };
-            inline size_t getY(void) { return _y; };
-            void moveX(int offset);
-            void moveY(int offset);
+            size_t getIndex(void) { return _index; };
+            size_t getX(void) { return _x; };
+            size_t getY(void) { return _y; };
+            void move(int offsetX, int offsetY);
 
         protected:
             /* data members */
@@ -77,6 +72,10 @@ namespace Fleaux
             /* member functions */
             void _setXY(void);
             void _setIndex(void);
+
+        private:
+            void __moveX(int offset);
+            void __moveY(int offset);
     };
 }
 #endif
