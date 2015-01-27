@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['_5fsetindex',['_setIndex',['../classFleaux_1_1Cursor.html#a964ad98494b190af5fca13c8cbe69371',1,'Fleaux::Cursor']]],
-  ['_5fsetxy',['_setXY',['../classFleaux_1_1Cursor.html#a3a45b2bde24c3173e84b8097c789265b',1,'Fleaux::Cursor']]]
+  ['cursor',['Cursor',['../classFleaux_1_1Cursor.html#aa2811c8ebadd1b019a1d1099eb401e3b',1,'Fleaux::Cursor::Cursor(Editor *ed)'],['../classFleaux_1_1Cursor.html#af6415626e9f343334e527bad5b97407f',1,'Fleaux::Cursor::Cursor(const Cursor &amp;curs)']]]
 ];

@@ -1,11 +1,5 @@
 \hypertarget{classFleaux_1_1Editor}{}\section{Fleaux\+:\+:Editor Class Reference}
 \label{classFleaux_1_1Editor}\index{Fleaux\+::\+Editor@{Fleaux\+::\+Editor}}
-Inheritance diagram for Fleaux\+:\+:Editor\+:\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[height=2.000000cm]{classFleaux_1_1Editor}
-\end{center}
-\end{figure}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -13,28 +7,21 @@ Inheritance diagram for Fleaux\+:\+:Editor\+:\begin{figure}[H]
 \item 
 \hyperlink{classFleaux_1_1Editor_a023e2569b82e4299d02ddbd0a912fc5e}{Editor} (const string \&path)
 \item 
+\hyperlink{classFleaux_1_1Editor_a44125eb3c92f032db297029b0039eef8}{Editor} (const \hyperlink{classFleaux_1_1Editor}{Editor} \&ed)
+\item 
 \hyperlink{classFleaux_1_1Editor_a2be65be385e3a41d16c426c7bcdc00d9}{$\sim$\+Editor} (void)
 \item 
 void \hyperlink{classFleaux_1_1Editor_ac525cdc5632ff3cf1664a2088a4306e6}{read\+From\+File} (const string \&path)
 \item 
 void \hyperlink{classFleaux_1_1Editor_ad6f189d15112586cc5cefd37ab82e5f0}{write\+To\+File} (const string \&path)
 \item 
-\hypertarget{classFleaux_1_1Editor_a1b50a8618575889ef764404d1074940e}{}\hyperlink{classFleaux_1_1ICursor}{I\+Cursor} $\ast$ {\bfseries get\+Cursor} (void)\label{classFleaux_1_1Editor_a1b50a8618575889ef764404d1074940e}
-
-\end{DoxyCompactItemize}
-\subsection*{Public Attributes}
-\begin{DoxyCompactItemize}
-\item 
-\hypertarget{classFleaux_1_1Editor_ab86c4d580c9e59bf5875c74064f2ff3c}{}size\+\_\+t {\bfseries size}\label{classFleaux_1_1Editor_ab86c4d580c9e59bf5875c74064f2ff3c}
-
-\end{DoxyCompactItemize}
-\subsection*{Protected Attributes}
-\begin{DoxyCompactItemize}
-\item 
-\hypertarget{classFleaux_1_1Editor_a919d3fb5e0d31bcb9ab64814f380ddfb}{}\hyperlink{classFleaux_1_1Cursor}{Cursor} $\ast$ {\bfseries \+\_\+cursor}\label{classFleaux_1_1Editor_a919d3fb5e0d31bcb9ab64814f380ddfb}
+\hypertarget{classFleaux_1_1Editor_a71402c284080c5e797086002ccec050e}{}size\+\_\+t {\bfseries get\+Size} (void) const \label{classFleaux_1_1Editor_a71402c284080c5e797086002ccec050e}
 
 \item 
-\hypertarget{classFleaux_1_1Editor_a40a9c440093c80483870179afd3720ba}{}Gap\+Vector$<$ char $>$ $\ast$ {\bfseries \+\_\+data}\label{classFleaux_1_1Editor_a40a9c440093c80483870179afd3720ba}
+\hypertarget{classFleaux_1_1Editor_abc6fa4d7775054ab7ee8201cde079694}{}const void $\ast$ {\bfseries get\+Data} (void) const \label{classFleaux_1_1Editor_abc6fa4d7775054ab7ee8201cde079694}
+
+\item 
+\hypertarget{classFleaux_1_1Editor_a046edb7b31229a1c472240f9f041fee6}{}\hyperlink{classFleaux_1_1Cursor}{Cursor} $\ast$ {\bfseries get\+Cursor} (void) const \label{classFleaux_1_1Editor_a046edb7b31229a1c472240f9f041fee6}
 
 \end{DoxyCompactItemize}
 \subsection*{Friends}
@@ -66,7 +53,14 @@ Default constructor \hypertarget{classFleaux_1_1Editor_a023e2569b82e4299d02ddbd0
 \item[{const string \&}]{path}
 \end{DoxyParamCaption}
 )}\label{classFleaux_1_1Editor_a023e2569b82e4299d02ddbd0a912fc5e}
-This constructor overload acts the same as the default constructor, except it also fills the editor\textquotesingle{}s buffer with the contents of the file at \textquotesingle{}path\textquotesingle{}. This is the same as calling the default constructor followed by read\+From\+File(path). \hypertarget{classFleaux_1_1Editor_a2be65be385e3a41d16c426c7bcdc00d9}{}\index{Fleaux\+::\+Editor@{Fleaux\+::\+Editor}!````~Editor@{$\sim$\+Editor}}
+This constructor overload acts the same as the default constructor, except it also fills the editor\textquotesingle{}s buffer with the contents of the file at \textquotesingle{}path\textquotesingle{}. This is the same as calling the default constructor followed by read\+From\+File(path). \hypertarget{classFleaux_1_1Editor_a44125eb3c92f032db297029b0039eef8}{}\index{Fleaux\+::\+Editor@{Fleaux\+::\+Editor}!Editor@{Editor}}
+\index{Editor@{Editor}!Fleaux\+::\+Editor@{Fleaux\+::\+Editor}}
+\subsubsection[{Editor}]{\setlength{\rightskip}{0pt plus 5cm}Fleaux\+::\+Editor\+::\+Editor (
+\begin{DoxyParamCaption}
+\item[{const {\bf Editor} \&}]{ed}
+\end{DoxyParamCaption}
+)}\label{classFleaux_1_1Editor_a44125eb3c92f032db297029b0039eef8}
+Copy Constructor \hypertarget{classFleaux_1_1Editor_a2be65be385e3a41d16c426c7bcdc00d9}{}\index{Fleaux\+::\+Editor@{Fleaux\+::\+Editor}!````~Editor@{$\sim$\+Editor}}
 \index{````~Editor@{$\sim$\+Editor}!Fleaux\+::\+Editor@{Fleaux\+::\+Editor}}
 \subsubsection[{$\sim$\+Editor}]{\setlength{\rightskip}{0pt plus 5cm}Fleaux\+::\+Editor\+::$\sim$\+Editor (
 \begin{DoxyParamCaption}
@@ -82,23 +76,15 @@ Deallocates the editor\textquotesingle{}s internal data and cursor members
 \begin{DoxyParamCaption}
 \item[{const string \&}]{path}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classFleaux_1_1Editor_ac525cdc5632ff3cf1664a2088a4306e6}
-Replaces the contents of the editor\textquotesingle{}s buffer with the contents of the file at \textquotesingle{}path\textquotesingle{} 
-
-Implements \hyperlink{classFleaux_1_1IEditor}{Fleaux\+::\+I\+Editor}.
-
-\hypertarget{classFleaux_1_1Editor_ad6f189d15112586cc5cefd37ab82e5f0}{}\index{Fleaux\+::\+Editor@{Fleaux\+::\+Editor}!write\+To\+File@{write\+To\+File}}
+)}\label{classFleaux_1_1Editor_ac525cdc5632ff3cf1664a2088a4306e6}
+Replaces the contents of the editor\textquotesingle{}s buffer with the contents of the file at \textquotesingle{}path\textquotesingle{} \hypertarget{classFleaux_1_1Editor_ad6f189d15112586cc5cefd37ab82e5f0}{}\index{Fleaux\+::\+Editor@{Fleaux\+::\+Editor}!write\+To\+File@{write\+To\+File}}
 \index{write\+To\+File@{write\+To\+File}!Fleaux\+::\+Editor@{Fleaux\+::\+Editor}}
 \subsubsection[{write\+To\+File}]{\setlength{\rightskip}{0pt plus 5cm}void Fleaux\+::\+Editor\+::write\+To\+File (
 \begin{DoxyParamCaption}
 \item[{const string \&}]{path}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [virtual]}}\label{classFleaux_1_1Editor_ad6f189d15112586cc5cefd37ab82e5f0}
+)}\label{classFleaux_1_1Editor_ad6f189d15112586cc5cefd37ab82e5f0}
 Writes the editor\textquotesingle{}s buffer contents to the file at \textquotesingle{}path\textquotesingle{} 
-
-Implements \hyperlink{classFleaux_1_1IEditor}{Fleaux\+::\+I\+Editor}.
-
-
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
