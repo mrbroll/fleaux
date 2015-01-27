@@ -2,7 +2,6 @@
 #define FLEAUX_EDITOR_HH_
 
 #include <cstdlib>
-#include "ieditor.hh"
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -21,17 +20,15 @@ namespace Fleaux
 
     class Cursor;
 
-    class Editor : public IEditor
+    class Editor
     {
         friend class Cursor;
 
         public:
-            /* data members */
-            size_t size;   
-
             /* constructor(s) & destructor(s) */
             Editor(void);
             Editor(const string& path);
+            Editor(const Editor& ed);
             ~Editor(void);
 
             /* member functions */
@@ -39,43 +36,47 @@ namespace Fleaux
             friend istream& operator>>(istream& is, Editor& ed);
             void readFromFile(const string& path);
             void writeToFile(const string& path);
-            ICursor* getCursor(void) { return (ICursor*)_cursor; };
+            size_t getSize(void) const { return __size; };
+            const void* getData(void) const { return static_cast<void*>(__data); };
+            Cursor* getCursor(void) const { return __cursor; };
             
-        protected:
+        private:
             /* data members */
-            Cursor* _cursor;
-            GapVector<char>* _data;
+            size_t __size;
+            Cursor* __cursor;
+            GapVector<char>* __data;
     };
 
-    class Cursor : public ICursor
+    class Cursor
     {
         public:
             /* constructor(s) & destructor(s) */
+            Cursor(void) : __index(0), __x(0), __y(0), __editor(NULL) {};
             Cursor(Editor* ed);
-            Cursor(const ICursor& curs);
+            Cursor(const Cursor& curs);
             
             /* member functions */
             void insert(const string& input);
             void remove(int length);
             void replace(int length, const string& replacement);
-            IEditor* getEditor(void) const { return (IEditor*)_editor; };
-            size_t getIndex(void) const { return _index; };
-            size_t getX(void) const { return _x; };
-            size_t getY(void) const { return _y; };
+            const Editor* getEditor(void) const { return __editor; };
+            size_t getIndex(void) const { return __index; };
+            size_t getX(void) const { return __x; };
+            size_t getY(void) const { return __y; };
             void move(int offsetX, int offsetY);
 
-        protected:
-            /* data members */
-            size_t _index;
-            size_t _x;
-            size_t _y;
-            Editor* _editor;
 
-            /* member functions */
-            void _setXY(void);
-            void _setIndex(void);
 
         private:
+            /* data members */
+            size_t __index;
+            size_t __x;
+            size_t __y;
+            Editor* __editor;
+
+            /* member functions */
+            void __setXY(void);
+            void __setIndex(void);
             void __moveX(int offset);
             void __moveY(int offset);
     };

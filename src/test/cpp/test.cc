@@ -1,5 +1,4 @@
 #include "../../fleaux/headers/editor.hh"
-#include "../../fleaux/headers/ieditor.hh"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <fstream>
@@ -36,7 +35,7 @@ namespace {
         stringstream str_buf;
         stringstream test_buf;
         str_buf << file.rdbuf();
-        ICursor* curs0 = ed0->getCursor();
+        Cursor* curs0 = ed0->getCursor();
         curs0->insert("this is the first line\n");
         curs0->insert("this is the second line\n");
         curs0->insert("this is the third line\nthis is the fourth line\nthis is the fifth line\n");
@@ -49,7 +48,7 @@ namespace {
         ifstream result_file("test/editor/remove_test_result.txt");
         stringstream expected_result;
         expected_result << result_file.rdbuf();
-        ICursor* curs0 = ed0->getCursor();
+        Cursor* curs0 = ed0->getCursor();
         ifstream input_file("test/editor/remove_test_input.txt");
         stringstream input;
         input << input_file.rdbuf();
@@ -67,7 +66,7 @@ namespace {
         sResult << result_file.rdbuf();
         /* go through the maze and leave breadcrumbs(.) */
         /* start at beginning of buffer */
-        ICursor* curs0 = ed1->getCursor();
+        Cursor* curs0 = ed1->getCursor();
         curs0->remove(-2);
         curs0->insert(".\n");
         curs0->move(0, -1);

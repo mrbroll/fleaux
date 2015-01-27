@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../headers/editor.hh"
-#include "../headers/ieditor.hh"
 #include "../../../deps/libsdnb/include/sdnb/gap_vector.hh"
 
 using namespace std;
@@ -17,16 +16,16 @@ using namespace SDNB;
 /**
  * Default constructor
  */
-Fleaux::Editor::Editor(void) : size(0)
+Fleaux::Editor::Editor(void) : __size(0)
 {
-    _data = new GapVector<char>();
-    if (_data == NULL) {
+    __data = new GapVector<char>();
+    if (__data == NULL) {
         cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
         exit(1);
     }
-    _cursor = NULL;
-    _cursor = new Cursor(this);
-    if (_cursor == NULL) {
+    __cursor = NULL;
+    __cursor = new Cursor(this);
+    if (__cursor == NULL) {
         cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
         exit(1);
     }
@@ -39,14 +38,14 @@ Fleaux::Editor::Editor(void) : size(0)
  */
 Fleaux::Editor::Editor(const string& path)
 {
-    _data = new GapVector<char>();
-    if (_data == NULL) {
+    __data = new GapVector<char>();
+    if (__data == NULL) {
         cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
         exit(1);
     }
-    _cursor = NULL;
-    _cursor = new Cursor(this);
-    if (_cursor == NULL) {
+    __cursor = NULL;
+    __cursor = new Cursor(this);
+    if (__cursor == NULL) {
         cerr << "ERROR: new failed for Fleaux::Cursor" << endl;
         exit(1);
     }
@@ -54,13 +53,23 @@ Fleaux::Editor::Editor(const string& path)
 }
 
 /**
+ * Copy Constructor
+ */
+Fleaux::Editor::Editor(const Fleaux::Editor& ed)
+{
+    __size = ed.__size;
+    __cursor = new Fleaux::Cursor(*ed.__cursor);
+    __data = new GapVector<char>(*ed.__data);
+}
+
+/**
  * Deallocates the editor's internal data and cursor members
  */
 Fleaux::Editor::~Editor(void)
 {
-    delete _data;
-    delete _cursor;
-    size = 0;
+    delete __data;
+    delete __cursor;
+    __size = 0;
 }
 
 /**
@@ -69,7 +78,7 @@ Fleaux::Editor::~Editor(void)
 ostream&
 Fleaux::operator<<(ostream& os, const Fleaux::Editor& ed)
 {
-    string* editorContent = new string(ed._data->begin(), ed._data->end());
+    string* editorContent = new string(ed.__data->begin(), ed.__data->end());
     os << *editorContent;
     delete editorContent;
     return os;
@@ -85,7 +94,7 @@ Fleaux::operator>>(istream& is, Fleaux::Editor& ed)
     istreambuf_iterator<char> begin(is);
     istreambuf_iterator<char> end;
     string* input = new string(begin, end);
-    ed._cursor->insert(*input);
+    ed.__cursor->insert(*input);
     delete input;
     return is;
 }
@@ -97,13 +106,13 @@ Fleaux::operator>>(istream& is, Fleaux::Editor& ed)
 void
 Fleaux::Editor::readFromFile(const string& path)
 {
-    if (_data != NULL) {
-        delete _data;
-        size = 0;
-        _data = NULL;
+    if (__data != NULL) {
+        delete __data;
+        __size = 0;
+        __data = NULL;
     }
-    _data = new GapVector<char>();
-    if (_data == NULL) {
+    __data = new GapVector<char>();
+    if (__data == NULL) {
         cerr << "ERROR: new failed for SDNB::GapVector<char>" << endl;
         exit(1);
     }
@@ -132,29 +141,30 @@ Fleaux::Editor::writeToFile(const string& path)
  * call is being made outside of an editor's constructor, then the new cursor is
  * merely a copy of ed's
  */
-Fleaux::Cursor::Cursor(Editor* ed) : _editor(ed)
+Fleaux::Cursor::Cursor(Fleaux::Editor* ed) : __editor(ed)
 {
-    if (ed->_cursor == NULL) {
-        _index = 0;
-        _x = 0;
-        _y = 0;
-        ed->_cursor = this;
+    if (ed->__cursor == NULL) {
+        __index = 0;
+        __x = 0;
+        __y = 0;
+        ed->__cursor = this;
     } else {
-        _index = ed->_cursor->getIndex();
-        _x = ed->_cursor->getX();
-        _y = ed->_cursor->getY();
+        const Cursor* curs = ed->getCursor();
+        __index = curs->getIndex();
+        __x = curs->getX();
+        __y = curs->getY();
     }
 }
 
 /**
  * Copy constructor - Simple shallow copy.
  */
-Fleaux::Cursor::Cursor(const Fleaux::ICursor& curs)
+Fleaux::Cursor::Cursor(const Fleaux::Cursor& curs)
 { 
-    _editor = (Fleaux::Editor*)curs.getEditor();
-    _index = curs.getIndex();
-    _x = curs.getX();
-    _y = curs.getY(); 
+    __editor = curs.__editor;
+    __index = curs.__index;
+    __x = curs.__x;
+    __y = curs.__y;
 }
 
 /**
@@ -164,10 +174,10 @@ Fleaux::Cursor::Cursor(const Fleaux::ICursor& curs)
 void
 Fleaux::Cursor::insert(const string& input)
 {
-    _editor->_data->insert(input.begin(), input.end());
-    _index += input.size();
-    _editor->size += input.size();
-    _setXY();
+    __editor->__data->insert(input.begin(), input.end());
+    __index += input.size();
+    __editor->__size += input.size();
+    __setXY();
 }
 
 /**
@@ -179,12 +189,12 @@ Fleaux::Cursor::insert(const string& input)
 void
 Fleaux::Cursor::remove(int length)
 {
-    length = _editor->_data->remove(length);
+    length = __editor->__data->remove(length);
     if (length < 0) {
-        _index += length;
-        _setXY();
+        __index += length;
+        __setXY();
     }
-    _editor->size -= abs(length);
+    __editor->__size -= abs(length);
 }
 
 /**
@@ -223,21 +233,21 @@ Fleaux::Cursor::move(int offsetX, int offsetY)
 void
 Fleaux::Cursor::__moveX(int offset)
 {
-    size_t oldIndex = _index;
+    size_t oldIndex = __index;
     if (offset < 0) {
-        offset = max(offset, -(int)_x);
+        offset = max(offset, -(int)__x);
     } else if (offset > 0) {
-        size_t rIndex = _x;
-        GapVector<char>::iterator it = _editor->_data->begin() + _index;
-        GapVector<char>::iterator end = _editor->_data->end();
+        size_t rIndex = __x;
+        GapVector<char>::iterator it = __editor->__data->begin() + __index;
+        GapVector<char>::iterator end = __editor->__data->end();
         while (it != end && *(it++) != '\n') {
             rIndex++;
         }
         offset = min(offset, (int)rIndex);
     }
-    _x += offset;
-    _index += offset;
-    _editor->_data->moveGap((int)_index - (int)oldIndex);
+    __x += offset;
+    __index += offset;
+    __editor->__data->moveGap((int)__index - (int)oldIndex);
 }
 
 /**
@@ -247,32 +257,32 @@ Fleaux::Cursor::__moveX(int offset)
 void
 Fleaux::Cursor::__moveY(int offset)
 {
-    size_t oldIndex = _index;
+    size_t oldIndex = __index;
     if (offset < 0) {
-        offset = max(offset, -(int)_y);
+        offset = max(offset, -(int)__y);
     }
-    _y += offset;
-    _setIndex();
-    _editor->_data->moveGap((int)_index - (int)oldIndex);
+    __y += offset;
+    __setIndex();
+    __editor->__data->moveGap((int)__index - (int)oldIndex);
 }
 
 /**
  * Calculates the cursor's new x and/or y value(s) after updating its index.
  */
 void
-Fleaux::Cursor::_setXY(void)
+Fleaux::Cursor::__setXY(void)
 {
-    if (_editor->size > 0) {
-        GapVector<char>::iterator it = _editor->_data->begin();
-        GapVector<char>::iterator end = it + _index;
-        _x = 0;
-        _y = 0;
+    if (__editor->__size > 0) {
+        GapVector<char>::iterator it = __editor->__data->begin();
+        GapVector<char>::iterator end = it + __index;
+        __x = 0;
+        __y = 0;
         while (it++ != end) {
             if (*(it - 1) == '\n') {
-                _x = 0;
-                _y++;
+                __x = 0;
+                __y++;
             } else {
-                _x++;
+                __x++;
             }
         }
     }
@@ -282,22 +292,22 @@ Fleaux::Cursor::_setXY(void)
  * Calculates the cursor's new index after updating it's x and/or y value(s).
  */
 void
-Fleaux::Cursor::_setIndex(void)
+Fleaux::Cursor::__setIndex(void)
 {
-    if (_editor->size > 0) {
-        _index = 0;
-        GapVector<char>::iterator it = _editor->_data->begin();
-        GapVector<char>::iterator end = _editor->_data->end();
-        for (size_t y = 0; y < _y; y++) {
+    if (__editor->__size > 0) {
+        __index = 0;
+        GapVector<char>::iterator it = __editor->__data->begin();
+        GapVector<char>::iterator end = __editor->__data->end();
+        for (size_t y = 0; y < __y; y++) {
             for (;it != end && *it != '\n'; it++) {
-                _index++;
+                __index++;
             }
             it++;
-            _index++;
+            __index++;
         }
 
-        for (size_t x = 0; x < _x && it != end && *(it++) != '\n'; x++) {
-            _index++;
+        for (size_t x = 0; x < __x && it != end && *(it++) != '\n'; x++) {
+            __index++;
         }
     }
 }
